@@ -3,12 +3,13 @@ extends Node2D
 enum Tile_Colors { color_1, color_2, color_3, color_4, color_5, color_6 }
 export(Tile_Colors) var color
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
-	pass
+var move_tween
 
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+func _ready():
+	move_tween = get_node("move_tween")
+
+# move the tile
+func move(target):
+	move_tween.interpolate_property(self, "position", position, target, 0.3, 
+	                            Tween.TRANS_BOUNCE, Tween.EASE_OUT)
+	move_tween.start()

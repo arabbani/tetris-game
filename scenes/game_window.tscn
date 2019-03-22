@@ -30,10 +30,19 @@ __meta__ = {
 script = ExtResource( 2 )
 columns = 16
 rows = 24
-tile_size = 60
+tile_size = 64
 grid_x_start = 60
 grid_y_start = 1702
 new_tetromino_x_start = 444
 new_tetromino_y_start = 230
+
+[node name="move_down_timer" type="Timer" parent="." index="2"]
+
+process_mode = 1
+wait_time = 1.0
+one_shot = false
+autostart = false
+
+[connection signal="timeout" from="move_down_timer" to="game_grid" method="_on_move_down_timer_timeout"]
 
 

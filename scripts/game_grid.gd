@@ -221,10 +221,10 @@ func select_tiles():
 		var random_number = random_number(available_tiles.size())
 		tiles.append(available_tiles[random_number].instance())
 	current_tetromino.tiles = tiles
-	draw_tiles()
+	draw_tetromino()
 
-# draw tiles
-func draw_tiles():
+# draw tetromino
+func draw_tetromino():
 	var tile_index = 0
 	var active_tetromino = current_tetromino.active_tetromino
 	for i in active_tetromino.size():
@@ -235,6 +235,21 @@ func draw_tiles():
 				tile_index += 1
 				add_child(tile)
 				tile.position = grid_to_pixel(new_tetromino_x_start, new_tetromino_y_start + tile_size * current_tetromino.tetromino["y_offset"][current_tetromino.active_tetromino_index], j, i)
+	get_parent().get_node("move_down_timer").start()
+
+# move tetromino down
+func move_tetromino_down():
+	for i in current_tetromino.tetromino["y_offset"].size():
+		current_tetromino.tetromino["y_offset"][i] += 1
+	var tile_index = 0
+	var active_tetromino = current_tetromino.active_tetromino
+	for i in active_tetromino.size():
+		var positions = active_tetromino[i]
+		for j in positions.size():
+			if positions[j]:
+				var tile = current_tetromino.tiles[tile_index]
+				tile_index += 1
+				tile.move(grid_to_pixel(new_tetromino_x_start, new_tetromino_y_start + tile_size * current_tetromino.tetromino["y_offset"][current_tetromino.active_tetromino_index], j, i))
 
 # convert grid position to pixel position
 func grid_to_pixel(x_start, y_start, column, row):
@@ -255,6 +270,8 @@ func make_grid_tiles():
 func random_number(end):
 	return floor(rand_range(0, end))
 
+func _on_move_down_timer_timeout():
+	move_tetromino_down()
 
 
 # Tetromino Class
@@ -274,5 +291,4 @@ class Tetromino:
 			active_tetromino_index += 1
 			if active_tetromino_index >= 4:
 				active_tetromino_index = 0
-
 
