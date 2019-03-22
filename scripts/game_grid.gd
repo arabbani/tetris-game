@@ -70,7 +70,7 @@ var tetrominoes = [
 				[0, 1, 0]
 			]
 		],
-		"x_offset": [6, 6, 6, 7],
+		"x_offset": 6,
 		"y_offset": [-2, -3, -3, -3],
 		"rotate": true
 	},
@@ -98,7 +98,7 @@ var tetrominoes = [
 				[0, 0, 1]
 			]
 		],
-		"x_offset": [7, 6, 6, 6],
+		"x_offset": 6,
 		"y_offset": [-3, -2, -3, -3],
 		"rotate": true
 	},
@@ -126,7 +126,7 @@ var tetrominoes = [
 				[0, 1, 0]
 			]
 		],
-		"x_offset": [6, 7, 6, 6],
+		"x_offset": 6,
 		"y_offset": [-3, -3, -2, -3],
 		"rotate": true
 	},
@@ -154,7 +154,7 @@ var tetrominoes = [
 				[0, 0, 0]
 			]
 		],
-		"x_offset": [6, 6, 7, 6],
+		"x_offset": 6,
 		"y_offset": [-3, -3, -3, -2],
 		"rotate": true
 	},
@@ -186,7 +186,7 @@ var tetrominoes = [
 				[0, 0, 0, 0]
 			]
 		],
-		"x_offset": [6, 6, 5, 6],
+		"x_offset": 6,
 		"y_offset": [-4, -2, -4, -3],
 		"rotate": true
 	},
@@ -198,7 +198,7 @@ var tetrominoes = [
 				[1, 1]
 			]
 		],
-		"x_offset": [7],
+		"x_offset": 7,
 		"y_offset": [-2],
 		"rotate": false
 	}
@@ -269,6 +269,8 @@ func move_tetromino_right():
 		current_tetromino.move_right()
 		move_tetromino()
 
+# rotate tetromino
+func rotate_tetromino():
 	print("ROTATE")
 	current_tetromino.rotate()
 
@@ -380,10 +382,9 @@ class Tetromino:
 			if active_tetromino_index >= 4:
 				active_tetromino_index = 0
 			print(active_tetromino_index)
-			
 	
 	func current_x_offset():
-		return tetromino["x_offset"][active_tetromino_index]
+		return tetromino["x_offset"]
 	
 	func current_y_offset():
 		return tetromino["y_offset"][active_tetromino_index]
@@ -393,10 +394,8 @@ class Tetromino:
 			tetromino["y_offset"][i] += 1
 	
 	func move_left():
-		for i in tetromino["x_offset"].size():
-			tetromino["x_offset"][i] -= 1
+		tetromino["x_offset"] -= 1
 	
 	func move_right():
-		for i in tetromino["x_offset"].size():
-			tetromino["x_offset"][i] += 1
+		tetromino["x_offset"] += 1
 
