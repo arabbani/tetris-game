@@ -242,29 +242,32 @@ func draw_tetromino():
 				var tile = current_tetromino.tiles[tile_index]
 				tile_index += 1
 				add_child(tile)
-				tile.position = grid_to_pixel(column, row)
-	get_parent().get_node("move_down_timer").start()
+				tile.position = grid_to_pixel(get_x_start(), get_y_start(), column, row)
+	get_timer().start()
 
 # move tetromino down
 func move_tetromino_down():
-	#grid_tiles[6][7] = 4
-	#if move_allowed(MoveDirection.DOWN):
-	#	print("Y")
-		
-	#else:
-	#	print("N")
-	current_tetromino.move_down()
-	move_tetromino()
+	#var tile = available_tiles[0].instance()
+	#grid_tiles[7][3] = tile
+	#add_child(tile)
+	#tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 3)
+	if move_allowed(MoveDirection.DOWN):
+		current_tetromino.move_down()
+		move_tetromino()
+	else:
+		get_timer().stop()
 
 # move tetromino left
 func move_tetromino_left():
-	current_tetromino.move_left()
-	move_tetromino()
+	if move_allowed(MoveDirection.LEFT):
+		current_tetromino.move_left()
+		move_tetromino()
 
 # move tetromino right
 func move_tetromino_right():
-	current_tetromino.move_right()
-	move_tetromino()
+	if move_allowed(MoveDirection.RIGHT):
+		current_tetromino.move_right()
+		move_tetromino()
 
 # move tetromino
 func move_tetromino():
@@ -276,7 +279,7 @@ func move_tetromino():
 			if positions[column]:
 				var tile = current_tetromino.tiles[tile_index]
 				tile_index += 1
-				tile.move(grid_to_pixel(column, row))
+				tile.move(grid_to_pixel(get_x_start(), get_y_start(), column, row))
 
 # check whether the move is allowed
 func move_allowed(move_direction):
@@ -293,23 +296,24 @@ func move_allowed(move_direction):
 		var positions = active_tetromino[row]
 		for column in positions.size():
 			if positions[column]:
-				var grid_position = grid_to_pixel(row, column) + offset
-				var pixel_position = pixel_to_grid(grid_position.x, grid_position.y)
-				print(grid_tiles[pixel_position.y][pixel_position.x])
-				if grid_tiles[pixel_position.y][pixel_position.x] != null:
+				var pixel_position = grid_to_pixel(get_x_start(), get_y_start(), column, row) + offset
+				var grid_position = pixel_to_grid(grid_x_start, grid_y_start, pixel_position.x, pixel_position.y)
+				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
+					return false
+				if grid_tiles[grid_position.x][grid_position.y] != null:
 					return false
 	return true
 
 # convert grid position to pixel position
-func grid_to_pixel(column, row):
-	var pixel_x = get_x_start() + column * tile_size
-	var pixel_y = get_y_start() + row * tile_size
+func grid_to_pixel(x_start, y_start, column, row):
+	var pixel_x = x_start + column * tile_size
+	var pixel_y = y_start + row * tile_size
 	return Vector2(pixel_x, pixel_y)
 
 # convert pixel position to grid position
-func pixel_to_grid(pixel_x, pixel_y):
-	var column = round((pixel_x - get_x_start()) / tile_size)
-	var row = round((pixel_y - get_y_start()) / tile_size)
+func pixel_to_grid(x_start, y_start, pixel_x, pixel_y):
+	var column = round((pixel_x - x_start) / tile_size)
+	var row = round((pixel_y - y_start) / tile_size)
 	return Vector2(column, row)
 
 # make grid tiles
@@ -324,6 +328,9 @@ func make_grid_tiles():
 # choose a random number
 func random_number(end):
 	return floor(rand_range(0, end))
+
+func get_timer():
+	return get_parent().get_node("move_down_timer")
 
 # choose x_start to draw the tetromino
 func get_x_start():
