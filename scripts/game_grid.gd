@@ -242,11 +242,17 @@ func draw_tetromino():
 				var tile = current_tetromino.tiles[tile_index]
 				tile_index += 1
 				add_child(tile)
-				tile.position = grid_to_pixel(get_x_start(), get_y_start(), row, column)
+				tile.position = grid_to_pixel(column, row)
 	get_parent().get_node("move_down_timer").start()
 
 # move tetromino down
 func move_tetromino_down():
+	#grid_tiles[6][7] = 4
+	#if move_allowed(MoveDirection.DOWN):
+	#	print("Y")
+		
+	#else:
+	#	print("N")
 	current_tetromino.move_down()
 	move_tetromino()
 
@@ -270,41 +276,49 @@ func move_tetromino():
 			if positions[column]:
 				var tile = current_tetromino.tiles[tile_index]
 				tile_index += 1
-				tile.move(grid_to_pixel(get_x_start(), get_y_start(), row, column))
+				tile.move(grid_to_pixel(column, row))
 
 # check whether the move is allowed
 func move_allowed(move_direction):
-	var x_start = get_x_start()
-	var y_start = get_y_start()
+	var offset = Vector2(0, 0)
 	match move_direction:
 		MoveDirection.LEFT:
-			x_start -= tile_size
+			offset.x -= tile_size
 		MoveDirection.RIGHT:
-			x_start += tile_size
+			offset.x += tile_size
 		MoveDirection.DOWN:
-			y_start += tile_size
+			offset.y += tile_size
 	var active_tetromino = current_tetromino.active_tetromino
-	for i in active_tetromino.size():
-		var positions = active_tetromino[i]
-		for j in positions.size():
-			if positions[j]:
-				#var tile = current_tetromino.tiles[tile_index]
-				#tile_index += 1
-				grid_to_pixel(x_start, y_start, i, j)
+	for row in active_tetromino.size():
+		var positions = active_tetromino[row]
+		for column in positions.size():
+			if positions[column]:
+				var grid_position = grid_to_pixel(row, column) + offset
+				var pixel_position = pixel_to_grid(grid_position.x, grid_position.y)
+				print(grid_tiles[pixel_position.y][pixel_position.x])
+				if grid_tiles[pixel_position.y][pixel_position.x] != null:
+					return false
+	return true
 
 # convert grid position to pixel position
-func grid_to_pixel(x_start, y_start, row, column):
-	var pixel_x = x_start + column * tile_size
-	var pixel_y = y_start + row * tile_size
+func grid_to_pixel(column, row):
+	var pixel_x = get_x_start() + column * tile_size
+	var pixel_y = get_y_start() + row * tile_size
 	return Vector2(pixel_x, pixel_y)
+
+# convert pixel position to grid position
+func pixel_to_grid(pixel_x, pixel_y):
+	var column = round((pixel_x - get_x_start()) / tile_size)
+	var row = round((pixel_y - get_y_start()) / tile_size)
+	return Vector2(column, row)
 
 # make grid tiles
 func make_grid_tiles():
 	var array = []
-	for row in rows:
+	for column in columns:
 		array.append([])
-		for column in columns:
-			array[row].append(null)
+		for row in rows:
+			array[column].append(null)
 	return array
 
 # choose a random number
