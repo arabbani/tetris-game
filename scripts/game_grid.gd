@@ -22,121 +22,72 @@ var tetrominoes = [
 		"name": "Z",
 		"position": [
 			[
+				[1, 0, 0],
 				[1, 1, 0],
-				[0, 1, 1],
-				[0, 0, 0]
-			],
-			[
-				[0, 0, 1],
-				[0, 1, 1],
 				[0, 1, 0]
 			],
 			[
 				[0, 0, 0],
-				[1, 1, 0],
-				[0, 1, 1]
+				[0, 1, 1],
+				[1, 1, 0]
 			],
 			[
 				[0, 1, 0],
+				[0, 1, 1],
+				[0, 0, 1]
+			],
+			[
+				[0, 1, 1],
 				[1, 1, 0],
-				[1, 0, 0]
+				[0, 0, 0]
 			]
 		],
-		"x_offset": [6, 6, 6, 7],
+		"x_offset": 6,
 		"y_offset": [-2, -3, -3, -3],
-		"rotate": true
+		"rotate": true,
+		"tiles": 4
 	},
 	{
 		"name": "S",
 		"position": [
 			[
-				[0, 1, 1],
-				[1, 1, 0],
-				[0, 0, 0]
-			],
-			[
 				[0, 1, 0],
-				[0, 1, 1],
-				[0, 0, 1]
+				[1, 1, 0],
+				[1, 0, 0]
 			],
 			[
 				[0, 0, 0],
-				[0, 1, 1],
-				[1, 1, 0]
+				[1, 1, 0],
+				[0, 1, 1]
 			],
 			[
-				[1, 0, 0],
-				[1, 1, 0],
+				[0, 0, 1],
+				[0, 1, 1],
 				[0, 1, 0]
+			],
+			[
+				[1, 1, 0],
+				[0, 1, 1],
+				[0, 0, 0]
 			]
 		],
 		"x_offset": 6,
 		"y_offset": [-2, -3, -3, -3],
-		"rotate": true
+		"rotate": true,
+		"tiles": 4
 	},
 	{
 		"name": "J",
 		"position": [
 			[
-				[0, 1, 0],
-				[0, 1, 0],
-				[1, 1, 0]
-			],
-			[
-				[1, 0, 0],
+				[0, 0, 1],
 				[1, 1, 1],
 				[0, 0, 0]
 			],
 			[
-				[0, 1, 1],
-				[0, 1, 0],
-				[0, 1, 0]
-			],
-			[
-				[0, 0, 0],
-				[1, 1, 1],
-				[0, 0, 1]
-			]
-		],
-		"x_offset": 6,
-		"y_offset": [-3, -2, -3, -3],
-		"rotate": true
-	},
-	{
-		"name": "T",
-		"position": [
-			[
-				[0, 0, 0],
-				[1, 1, 1],
-				[0, 1, 0]
-			],
-			[
-				[0, 1, 0],
 				[1, 1, 0],
+				[0, 1, 0],
 				[0, 1, 0]
-			],
-			[
-				[0, 1, 0],
-				[1, 1, 1],
-				[0, 0, 0]
-			],
-			[
-				[0, 1, 0],
-				[0, 1, 1],
-				[0, 1, 0]
-			]
-		],
-		"x_offset": 6,
-		"y_offset": [-3, -3, -2, -3],
-		"rotate": true
-	},
-	{
-		"name": "L",
-		"position": [
-			[
-				[0, 1, 0],
-				[0, 1, 0],
-				[0, 1, 1]
 			],
 			[
 				[0, 0, 0],
@@ -144,23 +95,83 @@ var tetrominoes = [
 				[1, 0, 0]
 			],
 			[
+				[0, 1, 0],
+				[0, 1, 0],
+				[0, 1, 1]
+			]
+		],
+		"x_offset": 6,
+		"y_offset": [-3, -2, -3, -3],
+		"rotate": true,
+		"tiles": 4
+	},
+	{
+		"name": "T",
+		"position": [
+			[
+				[0, 1, 0],
+				[0, 1, 1],
+				[0, 1, 0]
+			],
+			[
+				[0, 1, 0],
+				[1, 1, 1],
+				[0, 0, 0]
+			],
+			[
+				[0, 1, 0],
 				[1, 1, 0],
+				[0, 1, 0]
+			],
+			[
+				[0, 0, 0],
+				[1, 1, 1],
+				[0, 1, 0]
+			]
+		],
+		"x_offset": 6,
+		"y_offset": [-3, -3, -2, -3],
+		"rotate": true,
+		"tiles": 4
+	},
+	{
+		"name": "L",
+		"position": [
+			[
+				[0, 0, 0],
+				[1, 1, 1],
+				[0, 0, 1]
+			],
+			[
+				[0, 1, 1],
 				[0, 1, 0],
 				[0, 1, 0]
 			],
 			[
-				[0, 0, 1],
+				[1, 0, 0],
 				[1, 1, 1],
 				[0, 0, 0]
+			],
+			[
+				[0, 1, 0],
+				[0, 1, 0],
+				[1, 1, 0]
 			]
 		],
 		"x_offset": 6,
 		"y_offset": [-3, -3, -3, -2],
-		"rotate": true
+		"rotate": true,
+		"tiles": 4
 	},
 	{
 		"name": "I",
 		"position": [
+			[
+				[0, 0, 0, 0],
+				[1, 1, 1, 1],
+				[0, 0, 0, 0],
+				[0, 0, 0, 0]
+			],
 			[
 				[0, 1, 0, 0],
 				[0, 1, 0, 0],
@@ -169,26 +180,21 @@ var tetrominoes = [
 			],
 			[
 				[0, 0, 0, 0],
-				[1, 1, 1, 1],
 				[0, 0, 0, 0],
+				[1, 1, 1, 1],
 				[0, 0, 0, 0]
 			],
 			[
 				[0, 0, 1, 0],
 				[0, 0, 1, 0],
 				[0, 0, 1, 0],
-				[0, 0, 1, 0]
-			],
-			[
-				[0, 0, 0, 0],
-				[0, 0, 0, 0],
-				[1, 1, 1, 1],
-				[0, 0, 0, 0]
+				[0, 0, 1, 0],
 			]
 		],
 		"x_offset": 6,
 		"y_offset": [-4, -2, -4, -3],
-		"rotate": true
+		"rotate": true,
+		"tiles": 4
 	},
 	{
 		"name": "O",
@@ -200,7 +206,8 @@ var tetrominoes = [
 		],
 		"x_offset": 7,
 		"y_offset": [-2],
-		"rotate": false
+		"rotate": false,
+		"tiles": 4
 	}
 ]
 var grid_tiles = []
@@ -214,16 +221,14 @@ func _ready():
 
 # create new tetromino
 func create_new_tetromino():
-	var random_number = random_number(tetrominoes.size())
-	var tetromino = tetrominoes[random_number]
-	current_tetromino = Tetromino.new(tetromino)
+	current_tetromino = Tetromino.new(tetrominoes[random_number(tetrominoes.size())])
 	select_tiles()
 
 # select tiles for the current tetromino
 func select_tiles():
 	var tiles = []
-	var number = current_tetromino.tetromino["position"].size()
-	for i in number:
+	var number_of_tiles = current_tetromino.tetromino["tiles"]
+	for i in number_of_tiles:
 		var random_number = random_number(available_tiles.size())
 		tiles.append(available_tiles[random_number].instance())
 	current_tetromino.tiles = tiles
@@ -233,10 +238,10 @@ func select_tiles():
 func draw_tetromino():
 	var tile_index = 0
 	var active_tetromino = current_tetromino.active_tetromino
-	for row in active_tetromino.size():
-		var positions = active_tetromino[row]
-		for column in positions.size():
-			if positions[column]:
+	for column in active_tetromino.size():
+		var positions = active_tetromino[column]
+		for row in positions.size():
+			if positions[row]:
 				var tile = current_tetromino.tiles[tile_index]
 				tile_index += 1
 				add_child(tile)
@@ -245,11 +250,11 @@ func draw_tetromino():
 
 # move tetromino down
 func move_tetromino_down():
-	var tile = available_tiles[0].instance()
-	grid_tiles[7][3] = tile
-	add_child(tile)
-	tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 3)
-	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_DOWN):
+	#var tile = available_tiles[0].instance()
+	#grid_tiles[7][3] = tile
+	#add_child(tile)
+	#tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 3)
+	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_DOWN, current_tetromino.active_tetromino):
 		current_tetromino.move_down()
 		move_tetromino()
 	else:
@@ -257,13 +262,13 @@ func move_tetromino_down():
 
 # move tetromino left
 func move_tetromino_left():
-	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_LEFT):
+	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_LEFT, current_tetromino.active_tetromino):
 		current_tetromino.move_left()
 		move_tetromino()
 
 # move tetromino right
 func move_tetromino_right():
-	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_RIGHT):
+	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_RIGHT, current_tetromino.active_tetromino):
 		current_tetromino.move_right()
 		move_tetromino()
 
@@ -271,23 +276,33 @@ func move_tetromino_right():
 func rotate_tetromino():
 	if current_tetromino.tetromino["rotate"]:
 		print("ROTATE")
-		#var rotated_tetromino = 
-		current_tetromino.rotate()
+		var rotated_index = current_tetromino.next_active_tetromino_index()
+		var rotated_tetromino = current_tetromino.tetromino["position"][rotated_index]
+		print(current_tetromino.tetromino["name"])
+		print(rotated_index)
+		print(rotated_tetromino)
+		var x_start = get_x_start(current_tetromino.tetromino["x_offset"])
+		var y_start = get_y_start(current_tetromino.tetromino["y_offset"][rotated_index])
+		if move_allowed(x_start, y_start, MoveAction.ROTATE, rotated_tetromino):
+			current_tetromino.rotate(rotated_index)
+			move_tetromino()
+		else:
+			print("n")
 
 # move tetromino
 func move_tetromino():
 	var tile_index = 0
 	var active_tetromino = current_tetromino.active_tetromino
-	for row in active_tetromino.size():
-		var positions = active_tetromino[row]
-		for column in positions.size():
-			if positions[column]:
+	for column in active_tetromino.size():
+		var positions = active_tetromino[column]
+		for row in positions.size():
+			if positions[row]:
 				var tile = current_tetromino.tiles[tile_index]
 				tile_index += 1
 				tile.move(grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row))
 
 # check whether the move is allowed
-func move_allowed(tetromino_x, tetromino_y, move_direction):
+func move_allowed(tetromino_x, tetromino_y, move_direction, tetromino):
 	var offset = Vector2(0, 0)
 	match move_direction:
 		MoveAction.MOVE_LEFT:
@@ -296,11 +311,10 @@ func move_allowed(tetromino_x, tetromino_y, move_direction):
 			offset.x += tile_size
 		MoveAction.MOVE_DOWN:
 			offset.y += tile_size
-	var active_tetromino = current_tetromino.active_tetromino
-	for row in active_tetromino.size():
-		var positions = active_tetromino[row]
-		for column in positions.size():
-			if positions[column]:
+	for column in tetromino.size():
+		var positions = tetromino[column]
+		for row in positions.size():
+			if positions[row]:
 				var pixel_position = grid_to_pixel(tetromino_x, tetromino_y, column, row) + offset
 				var grid_position = pixel_to_grid(grid_x_start, grid_y_start, pixel_position.x, pixel_position.y)
 				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
@@ -379,16 +393,17 @@ class Tetromino:
 	func select_active_tetromino():
 		active_tetromino = tetromino["position"][active_tetromino_index]
 	
-	func rotate_active_tetromino_index():
+	func next_active_tetromino_index():
 		var index = active_tetromino_index
 		index += 1
 		if index >= 4:
 			index = 0
 		return index
 	
-	func rotate():
-		active_tetromino_index = rotate_active_tetromino_index()
-	
+	func rotate(index):
+		active_tetromino_index = index
+		select_active_tetromino()
+
 	func current_x_offset():
 		return tetromino["x_offset"]
 	
