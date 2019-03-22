@@ -269,6 +269,9 @@ func move_tetromino_right():
 		current_tetromino.move_right()
 		move_tetromino()
 
+	print("ROTATE")
+	current_tetromino.rotate()
+
 # move tetromino
 func move_tetromino():
 	var tile_index = 0
@@ -300,9 +303,20 @@ func move_allowed(move_direction):
 				var grid_position = pixel_to_grid(grid_x_start, grid_y_start, pixel_position.x, pixel_position.y)
 				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
 					return false
+				if grid_position.y < 0:
+					continue
 				if grid_tiles[grid_position.x][grid_position.y] != null:
 					return false
 	return true
+
+# check whether move button is pressed
+func check_move_input():
+	if Input.is_action_just_pressed("ui_left"):
+		move_tetromino_left()
+	elif Input.is_action_just_pressed("ui_right"):
+		move_tetromino_right()
+	elif Input.is_action_just_pressed("ui_up"):
+		rotate_tetromino()
 
 # convert grid position to pixel position
 func grid_to_pixel(x_start, y_start, column, row):
@@ -343,6 +357,9 @@ func get_y_start():
 func _on_move_down_timer_timeout():
 	move_tetromino_down()
 
+func _process(delta):
+	check_move_input()
+
 
 # Tetromino Class
 class Tetromino:
@@ -358,9 +375,12 @@ class Tetromino:
 	
 	func rotate():
 		if tetromino["rotate"]:
+			print(active_tetromino_index)
 			active_tetromino_index += 1
 			if active_tetromino_index >= 4:
 				active_tetromino_index = 0
+			print(active_tetromino_index)
+			
 	
 	func current_x_offset():
 		return tetromino["x_offset"][active_tetromino_index]
