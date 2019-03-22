@@ -214,7 +214,8 @@ func _ready():
 
 # create new tetromino
 func create_new_tetromino():
-	current_tetromino = Tetromino.new(tetrominoes[random_number(tetrominoes.size())])
+	var tetromino = tetrominoes[random_number(tetrominoes.size())]
+	current_tetromino = Tetromino.new(tetromino)
 	select_tiles()
 
 # select tiles for the current tetromino
@@ -240,16 +241,17 @@ func draw_tetromino():
 		for row in positions.size():
 			if positions[row]:
 				var tile = current_tetromino.tiles[column][row]
-				add_child(tile)
-				tile.position = grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
+				if tile != null:
+					add_child(tile)
+					tile.position = grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
 	get_timer().start()
 
 # move tetromino down
 func move_tetromino_down():
-	var tile = available_tiles[0].instance()
-	grid_tiles[7][3] = tile
-	add_child(tile)
-	tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 3)
+	#var tile = available_tiles[0].instance()
+	#grid_tiles[7][3] = tile
+	#add_child(tile)
+	#tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 3)
 	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_DOWN, current_tetromino.active_tetromino):
 		current_tetromino.move_down()
 		move_tetromino()
@@ -287,7 +289,8 @@ func move_tetromino():
 		for row in positions.size():
 			if positions[row]:
 				var tile = current_tetromino.tiles[column][row]
-				tile.move(grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row))
+				if tile != null:
+					tile.move(grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row))
 
 # check whether the move is allowed
 func move_allowed(tetromino_x, tetromino_y, move_direction, tetromino):
