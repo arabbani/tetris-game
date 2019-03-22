@@ -17,6 +17,7 @@ var available_tiles = [
 	preload("res://scenes/tile_5.tscn"),
 	preload("res://scenes/tile_6.tscn")
 ]
+
 var tetrominoes = [
 	{
 		"name": "Z",
@@ -207,10 +208,17 @@ var grid_tiles = []
 var current_tetromino = null
 enum MoveAction { MOVE_LEFT, MOVE_RIGHT, MOVE_DOWN, ROTATE }
 
+func blocker():
+	var tile = available_tiles[0].instance()
+	grid_tiles[7][7] = tile
+	add_child(tile)
+	tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 7)
+
 func _ready():
 	randomize()
 	grid_tiles = make_grid_tiles()
 	create_new_tetromino()
+	blocker()
 
 # create new tetromino
 func create_new_tetromino():
@@ -220,43 +228,47 @@ func create_new_tetromino():
 
 # select tiles for the current tetromino
 func select_tiles():
-	var tiles = []
 	var active_tetromino = current_tetromino.active_tetromino
-	for column in active_tetromino.size():
-		var positions = active_tetromino[column]
-		tiles.append([])
-		for row in positions.size():
-			tiles[column].append(null)
-			if positions[row]:
-				var random_number = random_number(available_tiles.size())
-				tiles[column][row] = available_tiles[random_number].instance()
-	current_tetromino.tiles = tiles
-	draw_tetromino()
-
-# draw tetromino
-func draw_tetromino():
-	var active_tetromino = current_tetromino.active_tetromino
-	for column in active_tetromino.size():
-		var positions = active_tetromino[column]
-		for row in positions.size():
-			if positions[row]:
-				var tile = current_tetromino.tiles[column][row]
-				if tile != null:
+	if active_tetromino != null:
+		for column in active_tetromino.size():
+			var positions = active_tetromino[column]
+			current_tetromino.tiles.append([])
+			for row in positions.size():
+				current_tetromino.tiles[column].append(null)
+				if positions[row]:
+					var random_number = random_number(available_tiles.size())
+					var tile = available_tiles[random_number].instance()
+					current_tetromino.tiles[column][row] = tile
 					add_child(tile)
 					tile.position = grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
-	get_timer().start()
+		get_timer().start()
+
+# locks the current tetromino
+func lock_tetromino():
+	#print(current_tetromino.tetromino["name"])
+	#print(current_tetromino.active_tetromino_index)
+	#print(current_tetromino.active_tetromino)
+	#print(current_tetromino.tiles)
+	var tiles = current_tetromino.tiles.duplicate()
+	for column in tiles.size():
+		var column_tiles = tiles[column]
+		for row in column_tiles.size():
+			if column_tiles[row] != null:
+				var pixel_position = grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
+				var grid_position = pixel_to_grid(grid_x_start, grid_y_start, pixel_position.x, pixel_position.y)
+				grid_tiles[grid_position.x][grid_position.y] = column_tiles[row]
 
 # move tetromino down
 func move_tetromino_down():
-	#var tile = available_tiles[0].instance()
-	#grid_tiles[7][3] = tile
-	#add_child(tile)
-	#tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 3)
 	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_DOWN, current_tetromino.active_tetromino):
 		current_tetromino.move_down()
 		move_tetromino()
 	else:
 		get_timer().stop()
+		lock_tetromino()
+		current_tetromino = null
+		create_new_tetromino()
+		#print(grid_tiles)
 
 # move tetromino left
 func move_tetromino_left():
@@ -374,12 +386,22 @@ class Tetromino:
 	var active_tetromino_index = 0
 	var active_tetromino = null
 	var tiles = []
+	var tetromino_y_offset = {
+		"Z": [-2, -3, -3, -3],
+		"S": [-2, -3, -3, -3],
+		"J": [-3, -2, -3, -3],
+		"T": [-3, -3, -2, -3],
+		"L": [-3, -3, -3, -2],
+		"I": [-4, -2, -4, -3],
+		"O": [-2]
+	}
 	
 	func _init(tetromino):
 		self.tetromino = tetromino
 		if tetromino["rotate"]:
 			active_tetromino_index = floor(rand_range(0, tetromino["position"].size()))
 		select_active_tetromino()
+		tetromino["y_offset"] = tetromino_y_offset[tetromino["name"]]
 	
 	func select_active_tetromino():
 		active_tetromino = tetromino["position"][active_tetromino_index]
