@@ -42,6 +42,7 @@ var tetrominoes = [
 				[1, 0, 0]
 			]
 		],
+		"x_offset": [0, 0, 0, 1],
 		"y_offset": [-2, -3, -3, -3],
 		"rotate": true
 	},
@@ -69,6 +70,7 @@ var tetrominoes = [
 				[0, 1, 0]
 			]
 		],
+		"x_offset": [0, 0, 0, 1],
 		"y_offset": [-2, -3, -3, -3],
 		"rotate": true
 	},
@@ -96,6 +98,7 @@ var tetrominoes = [
 				[0, 0, 1]
 			]
 		],
+		"x_offset": [1, 0, 0, 0],
 		"y_offset": [-3, -2, -3, -3],
 		"rotate": true
 	},
@@ -123,6 +126,7 @@ var tetrominoes = [
 				[0, 1, 0]
 			]
 		],
+		"x_offset": [0, 1, 0, 0],
 		"y_offset": [-3, -3, -2, -3],
 		"rotate": true
 	},
@@ -150,6 +154,7 @@ var tetrominoes = [
 				[0, 0, 0]
 			]
 		],
+		"x_offset": [0, 0, 1, 0],
 		"y_offset": [-3, -3, -3, -2],
 		"rotate": true
 	},
@@ -181,6 +186,7 @@ var tetrominoes = [
 				[0, 0, 0, 0]
 			]
 		],
+		"x_offset": [1, 0, -1, 0],
 		"y_offset": [-4, -2, -4, -3],
 		"rotate": true
 	},
@@ -192,6 +198,7 @@ var tetrominoes = [
 				[1, 1]
 			]
 		],
+		"x_offset": [1],
 		"y_offset": [-2],
 		"rotate": false
 	}
@@ -234,13 +241,32 @@ func draw_tetromino():
 				var tile = current_tetromino.tiles[tile_index]
 				tile_index += 1
 				add_child(tile)
-				tile.position = grid_to_pixel(new_tetromino_x_start, new_tetromino_y_start + tile_size * current_tetromino.tetromino["y_offset"][current_tetromino.active_tetromino_index], j, i)
+				tile.position = grid_to_pixel(
+				new_tetromino_x_start + tile_size * current_tetromino.tetromino["x_offset"][current_tetromino.active_tetromino_index], 
+				new_tetromino_y_start + tile_size * current_tetromino.tetromino["y_offset"][current_tetromino.active_tetromino_index], 
+				j, i)
 	get_parent().get_node("move_down_timer").start()
 
 # move tetromino down
 func move_tetromino_down():
 	for i in current_tetromino.tetromino["y_offset"].size():
 		current_tetromino.tetromino["y_offset"][i] += 1
+	move_tetromino()
+
+# move tetromino left
+func move_tetromino_left():
+	for i in current_tetromino.tetromino["x_offset"].size():
+		current_tetromino.tetromino["x_offset"][i] -= 1
+	move_tetromino()
+
+# move tetromino right
+func move_tetromino_right():
+	for i in current_tetromino.tetromino["x_offset"].size():
+		current_tetromino.tetromino["x_offset"][i] += 1
+	move_tetromino()
+
+# move tetromino
+func move_tetromino():
 	var tile_index = 0
 	var active_tetromino = current_tetromino.active_tetromino
 	for i in active_tetromino.size():
@@ -249,7 +275,10 @@ func move_tetromino_down():
 			if positions[j]:
 				var tile = current_tetromino.tiles[tile_index]
 				tile_index += 1
-				tile.move(grid_to_pixel(new_tetromino_x_start, new_tetromino_y_start + tile_size * current_tetromino.tetromino["y_offset"][current_tetromino.active_tetromino_index], j, i))
+				tile.move(grid_to_pixel(
+				new_tetromino_x_start + tile_size * current_tetromino.tetromino["x_offset"][current_tetromino.active_tetromino_index], 
+				new_tetromino_y_start + tile_size * current_tetromino.tetromino["y_offset"][current_tetromino.active_tetromino_index], 
+				j, i))
 
 # convert grid position to pixel position
 func grid_to_pixel(x_start, y_start, column, row):
