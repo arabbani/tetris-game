@@ -32,7 +32,7 @@ columns = 16
 rows = 24
 tile_size = 64
 grid_x_start = 60
-grid_y_start = 1702
+grid_y_start = 230
 new_tetromino_x_start = 444
 new_tetromino_y_start = 230
 
