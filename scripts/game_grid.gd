@@ -269,8 +269,10 @@ func move_tetromino_right():
 
 # rotate tetromino
 func rotate_tetromino():
-	print("ROTATE")
-	current_tetromino.rotate()
+	if current_tetromino.tetromino["rotate"]:
+		print("ROTATE")
+		#var rotated_tetromino = 
+		current_tetromino.rotate()
 
 # move tetromino
 func move_tetromino():
@@ -370,20 +372,22 @@ class Tetromino:
 	
 	func _init(tetromino):
 		self.tetromino = tetromino
+		if tetromino["rotate"]:
+			active_tetromino_index = floor(rand_range(0, tetromino["position"].size()))
 		select_active_tetromino()
 	
 	func select_active_tetromino():
-		if tetromino["rotate"]:
-			active_tetromino_index = floor(rand_range(0, tetromino["position"].size()))
 		active_tetromino = tetromino["position"][active_tetromino_index]
 	
+	func rotate_active_tetromino_index():
+		var index = active_tetromino_index
+		index += 1
+		if index >= 4:
+			index = 0
+		return index
+	
 	func rotate():
-		if tetromino["rotate"]:
-			print(active_tetromino_index)
-			active_tetromino_index += 1
-			if active_tetromino_index >= 4:
-				active_tetromino_index = 0
-			print(active_tetromino_index)
+		active_tetromino_index = rotate_active_tetromino_index()
 	
 	func current_x_offset():
 		return tetromino["x_offset"]
