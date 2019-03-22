@@ -44,8 +44,7 @@ var tetrominoes = [
 		],
 		"x_offset": 6,
 		"y_offset": [-2, -3, -3, -3],
-		"rotate": true,
-		"tiles": 4
+		"rotate": true
 	},
 	{
 		"name": "S",
@@ -73,8 +72,7 @@ var tetrominoes = [
 		],
 		"x_offset": 6,
 		"y_offset": [-2, -3, -3, -3],
-		"rotate": true,
-		"tiles": 4
+		"rotate": true
 	},
 	{
 		"name": "J",
@@ -102,8 +100,7 @@ var tetrominoes = [
 		],
 		"x_offset": 6,
 		"y_offset": [-3, -2, -3, -3],
-		"rotate": true,
-		"tiles": 4
+		"rotate": true
 	},
 	{
 		"name": "T",
@@ -131,8 +128,7 @@ var tetrominoes = [
 		],
 		"x_offset": 6,
 		"y_offset": [-3, -3, -2, -3],
-		"rotate": true,
-		"tiles": 4
+		"rotate": true
 	},
 	{
 		"name": "L",
@@ -160,8 +156,7 @@ var tetrominoes = [
 		],
 		"x_offset": 6,
 		"y_offset": [-3, -3, -3, -2],
-		"rotate": true,
-		"tiles": 4
+		"rotate": true
 	},
 	{
 		"name": "I",
@@ -193,8 +188,7 @@ var tetrominoes = [
 		],
 		"x_offset": 6,
 		"y_offset": [-4, -2, -4, -3],
-		"rotate": true,
-		"tiles": 4
+		"rotate": true
 	},
 	{
 		"name": "O",
@@ -206,8 +200,7 @@ var tetrominoes = [
 		],
 		"x_offset": 7,
 		"y_offset": [-2],
-		"rotate": false,
-		"tiles": 4
+		"rotate": false
 	}
 ]
 var grid_tiles = []
@@ -227,33 +220,36 @@ func create_new_tetromino():
 # select tiles for the current tetromino
 func select_tiles():
 	var tiles = []
-	var number_of_tiles = current_tetromino.tetromino["tiles"]
-	for i in number_of_tiles:
-		var random_number = random_number(available_tiles.size())
-		tiles.append(available_tiles[random_number].instance())
+	var active_tetromino = current_tetromino.active_tetromino
+	for column in active_tetromino.size():
+		var positions = active_tetromino[column]
+		tiles.append([])
+		for row in positions.size():
+			tiles[column].append(null)
+			if positions[row]:
+				var random_number = random_number(available_tiles.size())
+				tiles[column][row] = available_tiles[random_number].instance()
 	current_tetromino.tiles = tiles
 	draw_tetromino()
 
 # draw tetromino
 func draw_tetromino():
-	var tile_index = 0
 	var active_tetromino = current_tetromino.active_tetromino
 	for column in active_tetromino.size():
 		var positions = active_tetromino[column]
 		for row in positions.size():
 			if positions[row]:
-				var tile = current_tetromino.tiles[tile_index]
-				tile_index += 1
+				var tile = current_tetromino.tiles[column][row]
 				add_child(tile)
 				tile.position = grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
 	get_timer().start()
 
 # move tetromino down
 func move_tetromino_down():
-	#var tile = available_tiles[0].instance()
-	#grid_tiles[7][3] = tile
-	#add_child(tile)
-	#tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 3)
+	var tile = available_tiles[0].instance()
+	grid_tiles[7][3] = tile
+	add_child(tile)
+	tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 3)
 	if move_allowed(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), MoveAction.MOVE_DOWN, current_tetromino.active_tetromino):
 		current_tetromino.move_down()
 		move_tetromino()
@@ -275,30 +271,22 @@ func move_tetromino_right():
 # rotate tetromino
 func rotate_tetromino():
 	if current_tetromino.tetromino["rotate"]:
-		print("ROTATE")
 		var rotated_index = current_tetromino.next_active_tetromino_index()
 		var rotated_tetromino = current_tetromino.tetromino["position"][rotated_index]
-		print(current_tetromino.tetromino["name"])
-		print(rotated_index)
-		print(rotated_tetromino)
 		var x_start = get_x_start(current_tetromino.tetromino["x_offset"])
 		var y_start = get_y_start(current_tetromino.tetromino["y_offset"][rotated_index])
 		if move_allowed(x_start, y_start, MoveAction.ROTATE, rotated_tetromino):
 			current_tetromino.rotate(rotated_index)
 			move_tetromino()
-		else:
-			print("n")
 
 # move tetromino
 func move_tetromino():
-	var tile_index = 0
 	var active_tetromino = current_tetromino.active_tetromino
 	for column in active_tetromino.size():
 		var positions = active_tetromino[column]
 		for row in positions.size():
 			if positions[row]:
-				var tile = current_tetromino.tiles[tile_index]
-				tile_index += 1
+				var tile = current_tetromino.tiles[column][row]
 				tile.move(grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row))
 
 # check whether the move is allowed
@@ -403,6 +391,22 @@ class Tetromino:
 	func rotate(index):
 		active_tetromino_index = index
 		select_active_tetromino()
+		rotate_tiles()
+
+	func rotate_tiles():
+		var array = []
+		for i in tiles.size():
+			array.append([])
+			var tile_row = tiles[i]
+			var size = tile_row.size()
+			for j in size:
+				array[i].append(null)
+		for i in tiles.size():
+			var tile_row = tiles[i]
+			var size = tile_row.size()
+			for j in size:
+				array[j][i] = tiles[i][size - 1 - j]
+		tiles = array
 
 	func current_x_offset():
 		return tetromino["x_offset"]
