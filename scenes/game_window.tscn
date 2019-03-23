@@ -66,4 +66,6 @@ autostart = false
 
 [connection signal="timeout" from="destroy_timer" to="game_grid" method="_on_destroy_timer_timeout"]
 
+[connection signal="timeout" from="collapse_timer" to="game_grid" method="_on_collapse_timer_timeout"]
+
 

@@ -1,22 +1,12 @@
 extends Node2D
 
-
-func _on_collapse_timer_timeout():
-	collapse_columns()
-
-
-
-# collapse the empty places
-func collapse_columns():
-	for column in columns:
+for column in columns:
 		for row in range(rows - 1, 0, -1):
 			if is_tile_null(column, row):
 				if !is_tile_null(column, row - 1):
 					grid_tiles[column][row - 1].move(grid_to_pixel(grid_x_start, grid_y_start, column, row))
 					grid_tiles[column][row] = grid_tiles[column][row - 1]
 					grid_tiles[column][row - 1] = null
-	active_tetromino = null
-	create_new_tetromino()
 
 # check whether a match is there in the grid after collapse
 func match_after_collapse():

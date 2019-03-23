@@ -239,8 +239,7 @@ func _process(delta):
 
 
 
-
-################################## MOVE TETROMINOES ######################################
+################################## CREATE TETROMINO ######################################
 
 # create new tetromino
 func create_new_tetromino():
@@ -269,6 +268,10 @@ func create_tetromino_tiles():
 					tile.position = grid_to_pixel(column, row, active_tetromino.offset())
 					active_tetromino.tiles[column][row] = tile
 		start_timer()
+
+
+
+################################## MOVE TETROMINOES ######################################
 
 # move tetromino left
 func move_left():
@@ -327,7 +330,6 @@ func move_tetromino():
 				var tile = active_tetromino.tiles[column][row]
 				if tile != null:
 					tile.move(grid_to_pixel(column, row, active_tetromino.offset()))
-
 
 
 
@@ -395,8 +397,14 @@ func destroy_matched_tiles():
 					grid_tiles[column][row].queue_free()
 					grid_tiles[column][row] = null
 					#emit_signal("update_score", piece_value * streak)
-	#get_parent().get_node("collapse_timer").start()
+	get_parent().get_node("collapse_timer").start()
 	current_matches.clear()
+
+# collapse the tetrominoes
+func collapse_tetrominoes():
+	#for i in grid_tetrominoes.size():
+		
+	
 	create_new_tetromino()
 
 
@@ -462,7 +470,6 @@ func move_allowed(pattern, offset):
 
 
 
-
 ################################## UTILITY METHODS ######################################
 
 # convert tetromino coordinate to grid coordinate
@@ -508,7 +515,6 @@ func make_grid_tiles():
 
 
 
-
 ################################## TIMER ######################################
 
 func stop_timer():
@@ -528,6 +534,8 @@ func _on_move_down_timer_timeout():
 func _on_destroy_timer_timeout():
 	destroy_matched_tiles()
 
+func _on_collapse_timer_timeout():
+	collapse_tetrominoes()
 
 
 
@@ -597,4 +605,3 @@ class Tetromino:
 				array[j][i] = tiles[i][size - 1 - j]
 		tiles = array
 	
-
