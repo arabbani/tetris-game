@@ -41,8 +41,7 @@ var tetrominoes = [
 				[1, 1, 0],
 				[0, 0, 0]
 			]
-		],
-		"x_offset": 6
+		]
 	},
 	{
 		"name": "S",
@@ -67,8 +66,7 @@ var tetrominoes = [
 				[0, 1, 1],
 				[0, 0, 0]
 			]
-		],
-		"x_offset": 6
+		]
 	},
 	{
 		"name": "J",
@@ -93,8 +91,7 @@ var tetrominoes = [
 				[0, 1, 0],
 				[0, 1, 1]
 			]
-		],
-		"x_offset": 6
+		]
 	},
 	{
 		"name": "T",
@@ -119,8 +116,7 @@ var tetrominoes = [
 				[1, 1, 1],
 				[0, 1, 0]
 			]
-		],
-		"x_offset": 6
+		]
 	},
 	{
 		"name": "L",
@@ -145,8 +141,7 @@ var tetrominoes = [
 				[0, 1, 0],
 				[1, 1, 0]
 			]
-		],
-		"x_offset": 6
+		]
 	},
 	{
 		"name": "I",
@@ -175,8 +170,7 @@ var tetrominoes = [
 				[0, 0, 1, 0],
 				[0, 0, 1, 0],
 			]
-		],
-		"x_offset": 6
+		]
 	},
 	{
 		"name": "O",
@@ -205,14 +199,15 @@ var tetrominoes = [
 				[0, 1, 1, 0],
 				[0, 0, 0, 0]
 			]
-		],
-		"x_offset": 6
+		]
 	}
 ]
 var grid_tiles = []
 var current_tetromino = null
 enum GameStates { PLAYING, GAME_OVER }
+enum MoveStates { ACTIVE, INACTIVE }
 var game_state
+var movement
 
 func blocker():
 	var tile = available_tiles[0].instance()
@@ -224,6 +219,7 @@ func _ready():
 	randomize()
 	grid_tiles = make_grid_tiles()
 	game_state = GameStates.PLAYING
+	movement = MoveStates.INACTIVE
 	create_new_tetromino()
 	#blocker()
 
@@ -243,11 +239,16 @@ func select_tiles():
 			for row in positions.size():
 				current_tetromino.tiles[column].append(null)
 				if positions[row]:
+					var loops = 0
 					var random_number = random_number(available_tiles.size())
 					var tile = available_tiles[random_number].instance()
-					current_tetromino.tiles[column][row] = tile
+					while match_at(column, row, tile.color) && loops < 100:
+						random_number = random_number(available_tiles.size())
+						loops += 1
+						tile = available_tiles[random_number].instance()
 					add_child(tile)
 					tile.position = grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
+					current_tetromino.tiles[column][row] = tile
 		get_timer().start()
 
 # locks the current tetromino
@@ -262,9 +263,11 @@ func lock_tetromino():
 				game_state = GameStates.GAME_OVER
 				break
 			elif column_tiles[row] != null:
-				var pixel_position = grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
-				var grid_position = pixel_to_grid(grid_x_start, grid_y_start, pixel_position.x, pixel_position.y)
+				var grid_position = tetromino_to_grid_coordinate(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
 				grid_tiles[grid_position.x][grid_position.y] = column_tiles[row]
+	current_tetromino = null
+	if game_state != GameStates.GAME_OVER:
+		create_new_tetromino()
 
 # move tetromino down
 func move_tetromino_down():
@@ -272,11 +275,9 @@ func move_tetromino_down():
 		current_tetromino.move_down()
 		move_tetromino()
 	else:
-		get_timer().stop()
+		if !get_timer().is_stopped():
+			get_timer().stop()
 		lock_tetromino()
-		current_tetromino = null
-		if game_state == GameStates.PLAYING:
-			create_new_tetromino()
 
 # move tetromino left
 func move_tetromino_left():
@@ -302,7 +303,6 @@ func rotate_tetromino():
 			wall_kick = 1
 		else:
 			wall_kick = -1
-	print(wall_kick)
 	if move_allowed(x_start, y_start, rotated_tetromino, Vector2(wall_kick * tile_size , 0)):
 		current_tetromino.rotate(rotated_index)
 		if wall_kick > 0:
@@ -328,24 +328,53 @@ func move_allowed(tetromino_x, tetromino_y, tetromino, offset):
 		var positions = tetromino[column]
 		for row in positions.size():
 			if positions[row]:
-				var pixel_position = grid_to_pixel(tetromino_x, tetromino_y, column, row) + offset
-				var grid_position = pixel_to_grid(grid_x_start, grid_y_start, pixel_position.x, pixel_position.y)
+				var grid_position = tetromino_to_grid_coordinate(tetromino_x, tetromino_y, column, row, offset)
 				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
 					return false
 				if grid_position.y < 0:
 					continue
-				if grid_tiles[grid_position.x][grid_position.y] != null:
+				if !is_tile_null(grid_position.x, grid_position.y):
 					return false
 	return true
+
+# Check whether the tile is a match
+func match_at(column, row, color):
+	if column > 1:
+		if !is_tile_null(column - 1, row) && !is_tile_null(column - 2, row):
+			if grid_tiles[column - 1][row].color == color && grid_tiles[column - 2][row].color == color:
+				return true
+	if row > 1:
+		if !is_tile_null(column, row - 1) && !is_tile_null(column, row - 2):
+			if grid_tiles[column][row - 1].color == color && grid_tiles[column][row - 2].color == color:
+				return true
+	return false
+
+# convert tetromino coordinate to grid coordinate
+func tetromino_to_grid_coordinate(tetromino_x_start, tetromino_y_start, tetromino_column, tetromino_row, offset = Vector2(0, 0)):
+	var pixel_position = grid_to_pixel(tetromino_x_start, tetromino_y_start, tetromino_column, tetromino_row) + offset
+	return pixel_to_grid(grid_x_start, grid_y_start, pixel_position.x, pixel_position.y)
 
 # check whether move button is pressed
 func check_move_input():
 	if Input.is_action_just_pressed("ui_left"):
-		move_tetromino_left()
+		if movement != MoveStates.ACTIVE:
+			movement = MoveStates.ACTIVE
+			move_tetromino_left()
+			movement = MoveStates.INACTIVE
 	elif Input.is_action_just_pressed("ui_right"):
-		move_tetromino_right()
+		if movement != MoveStates.ACTIVE:
+			movement = MoveStates.ACTIVE
+			move_tetromino_right()
+			movement = MoveStates.INACTIVE
 	elif Input.is_action_just_pressed("ui_up"):
-		rotate_tetromino()
+		if movement != MoveStates.ACTIVE:
+			movement = MoveStates.ACTIVE
+			rotate_tetromino()
+			movement = MoveStates.INACTIVE
+
+# check whether tile is null
+func is_tile_null(column, row):
+	return grid_tiles[column][row] == null
 
 # convert grid position to pixel position
 func grid_to_pixel(x_start, y_start, column, row):
@@ -396,6 +425,7 @@ class Tetromino:
 	var active_tetromino_index = 0
 	var active_tetromino = null
 	var tiles = []
+	var tetromino_x_offset = 6
 	var tetromino_y_offset = {
 		"Z": [-2, -3, -3, -3],
 		"S": [-2, -3, -3, -3],
@@ -443,7 +473,7 @@ class Tetromino:
 		tiles = array
 
 	func current_x_offset():
-		return tetromino["x_offset"]
+		return tetromino_x_offset
 	
 	func current_y_offset():
 		return tetromino["y_offset"][active_tetromino_index]
@@ -453,8 +483,8 @@ class Tetromino:
 			tetromino["y_offset"][i] += 1
 	
 	func move_left():
-		tetromino["x_offset"] -= 1
+		tetromino_x_offset -= 1
 	
 	func move_right():
-		tetromino["x_offset"] += 1
+		tetromino_x_offset += 1
 
