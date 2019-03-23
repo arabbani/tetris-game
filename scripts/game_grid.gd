@@ -42,9 +42,7 @@ var tetrominoes = [
 				[0, 0, 0]
 			]
 		],
-		"x_offset": 6,
-		"y_offset": [-2, -3, -3, -3],
-		"rotate": true
+		"x_offset": 6
 	},
 	{
 		"name": "S",
@@ -70,9 +68,7 @@ var tetrominoes = [
 				[0, 0, 0]
 			]
 		],
-		"x_offset": 6,
-		"y_offset": [-2, -3, -3, -3],
-		"rotate": true
+		"x_offset": 6
 	},
 	{
 		"name": "J",
@@ -98,9 +94,7 @@ var tetrominoes = [
 				[0, 1, 1]
 			]
 		],
-		"x_offset": 6,
-		"y_offset": [-3, -2, -3, -3],
-		"rotate": true
+		"x_offset": 6
 	},
 	{
 		"name": "T",
@@ -126,9 +120,7 @@ var tetrominoes = [
 				[0, 1, 0]
 			]
 		],
-		"x_offset": 6,
-		"y_offset": [-3, -3, -2, -3],
-		"rotate": true
+		"x_offset": 6
 	},
 	{
 		"name": "L",
@@ -154,9 +146,7 @@ var tetrominoes = [
 				[1, 1, 0]
 			]
 		],
-		"x_offset": 6,
-		"y_offset": [-3, -3, -3, -2],
-		"rotate": true
+		"x_offset": 6
 	},
 	{
 		"name": "I",
@@ -186,37 +176,56 @@ var tetrominoes = [
 				[0, 0, 1, 0],
 			]
 		],
-		"x_offset": 6,
-		"y_offset": [-4, -2, -4, -3],
-		"rotate": true
+		"x_offset": 6
 	},
 	{
 		"name": "O",
 		"position": [
 			[
-				[1, 1],
-				[1, 1]
+				[0, 0, 0, 0],
+				[0, 1, 1, 0],
+				[0, 1, 1, 0],
+				[0, 0, 0, 0]
+			],
+			[
+				[0, 0, 0, 0],
+				[0, 1, 1, 0],
+				[0, 1, 1, 0],
+				[0, 0, 0, 0]
+			],
+			[
+				[0, 0, 0, 0],
+				[0, 1, 1, 0],
+				[0, 1, 1, 0],
+				[0, 0, 0, 0]
+			],
+			[
+				[0, 0, 0, 0],
+				[0, 1, 1, 0],
+				[0, 1, 1, 0],
+				[0, 0, 0, 0]
 			]
 		],
-		"x_offset": 7,
-		"y_offset": [-2],
-		"rotate": false
+		"x_offset": 6
 	}
 ]
 var grid_tiles = []
 var current_tetromino = null
+enum GameStates { PLAYING, GAME_OVER }
+var game_state
 
 func blocker():
 	var tile = available_tiles[0].instance()
-	grid_tiles[7][7] = tile
+	grid_tiles[7][4] = tile
 	add_child(tile)
-	tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 7)
+	tile.position = grid_to_pixel(grid_x_start, grid_y_start, 7, 4)
 
 func _ready():
 	randomize()
 	grid_tiles = make_grid_tiles()
+	game_state = GameStates.PLAYING
 	create_new_tetromino()
-	#blocker()
+	blocker()
 
 # create new tetromino
 func create_new_tetromino():
@@ -243,11 +252,16 @@ func select_tiles():
 
 # locks the current tetromino
 func lock_tetromino():
-	var tiles = current_tetromino.tiles.duplicate()
+	var tiles = current_tetromino.tiles
 	for column in tiles.size():
 		var column_tiles = tiles[column]
 		for row in column_tiles.size():
-			if column_tiles[row] != null:
+			if column_tiles[row] == null:
+				continue
+			elif (current_tetromino.current_y_offset() + row) < 0:
+				game_state = GameStates.GAME_OVER
+				break
+			elif column_tiles[row] != null:
 				var pixel_position = grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row)
 				var grid_position = pixel_to_grid(grid_x_start, grid_y_start, pixel_position.x, pixel_position.y)
 				grid_tiles[grid_position.x][grid_position.y] = column_tiles[row]
@@ -261,7 +275,8 @@ func move_tetromino_down():
 		get_timer().stop()
 		lock_tetromino()
 		current_tetromino = null
-		create_new_tetromino()
+		if game_state == GameStates.PLAYING:
+			create_new_tetromino()
 
 # move tetromino left
 func move_tetromino_left():
@@ -277,12 +292,23 @@ func move_tetromino_right():
 
 # rotate tetromino
 func rotate_tetromino():
-	if current_tetromino.tetromino["rotate"]:
-		var rotated_index = current_tetromino.next_active_tetromino_index()
-		var rotated_tetromino = current_tetromino.tetromino["position"][rotated_index]
-		if move_allowed(get_x_start(current_tetromino.tetromino["x_offset"]), get_y_start(current_tetromino.tetromino["y_offset"][rotated_index]), rotated_tetromino):
-			current_tetromino.rotate(rotated_index)
-			move_tetromino()
+	var rotated_index = current_tetromino.next_active_tetromino_index()
+	var rotated_tetromino = current_tetromino.tetromino["position"][rotated_index]
+	var x_start = current_tetromino.current_x_offset()
+	var y_start = get_y_start(current_tetromino.tetromino["y_offset"][rotated_index])
+	var wall_kick = 0
+	if !move_allowed(x_start, y_start, rotated_tetromino, Vector2(0, 0)):
+		if x_start < columns / 2:
+			wall_kick = 1
+		else:
+			wall_kick = -1
+	if move_allowed(x_start, y_start, rotated_tetromino, Vector2(wall_kick * tile_size , 0)):
+		current_tetromino.rotate(rotated_index)
+		if wall_kick > 0:
+			current_tetromino.move_right()
+		elif wall_kick < 0:
+			current_tetromino.move_left()
+		move_tetromino()
 
 # move tetromino
 func move_tetromino():
@@ -296,7 +322,7 @@ func move_tetromino():
 					tile.move(grid_to_pixel(get_x_start(current_tetromino.current_x_offset()), get_y_start(current_tetromino.current_y_offset()), column, row))
 
 # check whether the move is allowed
-func move_allowed(tetromino_x, tetromino_y, tetromino, offset = Vector2(0, 0)):
+func move_allowed(tetromino_x, tetromino_y, tetromino, offset):
 	for column in tetromino.size():
 		var positions = tetromino[column]
 		for row in positions.size():
@@ -376,15 +402,14 @@ class Tetromino:
 		"T": [-3, -3, -2, -3],
 		"L": [-3, -3, -3, -2],
 		"I": [-4, -2, -4, -3],
-		"O": [-2]
+		"O": [-3, -3, -3, -3]
 	}
 	
 	func _init(tetromino):
 		self.tetromino = tetromino
-		if tetromino["rotate"]:
-			active_tetromino_index = floor(rand_range(0, tetromino["position"].size()))
-		select_active_tetromino()
 		tetromino["y_offset"] = tetromino_y_offset[tetromino["name"]]
+		active_tetromino_index = floor(rand_range(0, tetromino["position"].size()))
+		select_active_tetromino()
 	
 	func select_active_tetromino():
 		active_tetromino = tetromino["position"][active_tetromino_index]
