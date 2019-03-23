@@ -225,7 +225,7 @@ func _ready():
 	grid_tiles = make_grid_tiles()
 	game_state = GameStates.PLAYING
 	create_new_tetromino()
-	blocker()
+	#blocker()
 
 # create new tetromino
 func create_new_tetromino():
@@ -294,7 +294,7 @@ func move_tetromino_right():
 func rotate_tetromino():
 	var rotated_index = current_tetromino.next_active_tetromino_index()
 	var rotated_tetromino = current_tetromino.tetromino["position"][rotated_index]
-	var x_start = current_tetromino.current_x_offset()
+	var x_start = get_x_start(current_tetromino.current_x_offset())
 	var y_start = get_y_start(current_tetromino.tetromino["y_offset"][rotated_index])
 	var wall_kick = 0
 	if !move_allowed(x_start, y_start, rotated_tetromino, Vector2(0, 0)):
@@ -302,6 +302,7 @@ func rotate_tetromino():
 			wall_kick = 1
 		else:
 			wall_kick = -1
+	print(wall_kick)
 	if move_allowed(x_start, y_start, rotated_tetromino, Vector2(wall_kick * tile_size , 0)):
 		current_tetromino.rotate(rotated_index)
 		if wall_kick > 0:
