@@ -33,8 +33,6 @@ rows = 24
 tile_size = 64
 grid_x_start = 60
 grid_y_start = 230
-new_tetromino_x_start = 444
-new_tetromino_y_start = 230
 
 [node name="move_down_timer" type="Timer" parent="." index="2"]
 
@@ -43,6 +41,31 @@ wait_time = 1.0
 one_shot = false
 autostart = false
 
+[node name="destroy_timer" type="Timer" parent="." index="3"]
+
+process_mode = 1
+wait_time = 0.4
+one_shot = true
+autostart = false
+
+[node name="collapse_timer" type="Timer" parent="." index="4"]
+
+process_mode = 1
+wait_time = 0.2
+one_shot = true
+autostart = false
+
+[node name="recreate_tetromino" type="Timer" parent="." index="5"]
+
+process_mode = 1
+wait_time = 1.0
+one_shot = false
+autostart = false
+
 [connection signal="timeout" from="move_down_timer" to="game_grid" method="_on_move_down_timer_timeout"]
+
+[connection signal="timeout" from="destroy_timer" to="game_grid" method="_on_destroy_timer_timeout"]
+
+[connection signal="timeout" from="collapse_timer" to="game_grid" method="_on_collapse_timer_timeout"]
 
 
