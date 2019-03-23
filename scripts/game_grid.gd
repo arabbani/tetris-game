@@ -295,7 +295,7 @@ func move_tetromino_right():
 func rotate_tetromino():
 	var rotated_index = current_tetromino.next_active_tetromino_index()
 	var rotated_tetromino = current_tetromino.tetromino["position"][rotated_index]
-	var x_start = get_x_start(current_tetromino.current_x_offset())
+	var x_start = get_x_start(current_tetromino.tetromino["x_offset"][rotated_index])
 	var y_start = get_y_start(current_tetromino.tetromino["y_offset"][rotated_index])
 	var wall_kick = 0
 	if !move_allowed(x_start, y_start, rotated_tetromino, Vector2(0, 0)):
@@ -425,8 +425,16 @@ class Tetromino:
 	var active_tetromino_index = 0
 	var active_tetromino = null
 	var tiles = []
-	var tetromino_x_offset = 6
-	var tetromino_y_offset = {
+	var tetromino_x_offsets = {
+		"Z": [6, 6, 6, 7],
+		"S": [6, 6, 6, 7],
+		"J": [7, 6, 6, 6],
+		"T": [6, 7, 6, 6],
+		"L": [6, 6, 7, 6],
+		"I": [6, 6, 5, 6],
+		"O": [6, 6, 6, 6]
+	}
+	var tetromino_y_offsets = {
 		"Z": [-2, -3, -3, -3],
 		"S": [-2, -3, -3, -3],
 		"J": [-3, -2, -3, -3],
@@ -438,7 +446,8 @@ class Tetromino:
 	
 	func _init(tetromino):
 		self.tetromino = tetromino
-		tetromino["y_offset"] = tetromino_y_offset[tetromino["name"]]
+		tetromino["x_offset"] = tetromino_x_offsets[tetromino["name"]]
+		tetromino["y_offset"] = tetromino_y_offsets[tetromino["name"]]
 		active_tetromino_index = floor(rand_range(0, tetromino["position"].size()))
 		select_active_tetromino()
 	
@@ -473,7 +482,7 @@ class Tetromino:
 		tiles = array
 
 	func current_x_offset():
-		return tetromino_x_offset
+		return tetromino["x_offset"][active_tetromino_index]
 	
 	func current_y_offset():
 		return tetromino["y_offset"][active_tetromino_index]
@@ -483,8 +492,10 @@ class Tetromino:
 			tetromino["y_offset"][i] += 1
 	
 	func move_left():
-		tetromino_x_offset -= 1
+		for i in tetromino["x_offset"].size():
+			tetromino["x_offset"][i] -= 1
 	
 	func move_right():
-		tetromino_x_offset += 1
+		for i in tetromino["x_offset"].size():
+			tetromino["x_offset"][i] += 1
 
