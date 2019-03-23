@@ -357,20 +357,17 @@ func tetromino_to_grid_coordinate(tetromino_x_start, tetromino_y_start, tetromin
 # check whether move button is pressed
 func check_move_input():
 	if Input.is_action_just_pressed("ui_left"):
-		if movement != MoveStates.ACTIVE:
-			movement = MoveStates.ACTIVE
-			move_tetromino_left()
-			movement = MoveStates.INACTIVE
+		movement = MoveStates.ACTIVE
+		move_tetromino_left()
+		movement = MoveStates.INACTIVE
 	elif Input.is_action_just_pressed("ui_right"):
-		if movement != MoveStates.ACTIVE:
-			movement = MoveStates.ACTIVE
-			move_tetromino_right()
-			movement = MoveStates.INACTIVE
+		movement = MoveStates.ACTIVE
+		move_tetromino_right()
+		movement = MoveStates.INACTIVE
 	elif Input.is_action_just_pressed("ui_up"):
-		if movement != MoveStates.ACTIVE:
-			movement = MoveStates.ACTIVE
-			rotate_tetromino()
-			movement = MoveStates.INACTIVE
+		movement = MoveStates.ACTIVE
+		rotate_tetromino()
+		movement = MoveStates.INACTIVE
 
 # check whether tile is null
 func is_tile_null(column, row):
@@ -416,7 +413,8 @@ func _on_move_down_timer_timeout():
 	move_tetromino_down()
 
 func _process(delta):
-	check_move_input()
+	if movement != MoveStates.ACTIVE:
+		check_move_input()
 
 
 # Tetromino Class
