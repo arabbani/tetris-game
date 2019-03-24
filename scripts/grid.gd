@@ -1,5 +1,43 @@
 extends Node2D
 
+
+
+
+
+
+
+
+
+
+
+for i in grid_tetrominoes.size():
+		var tetromino = grid_tetrominoes[i]
+		while move_allowed(tetromino.get_pattern(), tetromino.offset() + Vector2(0, 1)):
+			print("MOVE DOWN")
+			tetromino.move_down() 
+			var pattern = tetromino.get_pattern()
+			var offset = tetromino.offset()
+			for column in pattern.size():
+				var pattern_flags = pattern[column]
+				for row in pattern_flags.size():
+					if pattern_flags[row]:
+						var previous_grid_position = tetromino_to_grid_coordinate(column, row, offset - Vector2(0, 1))
+						var current_grid_position = tetromino_to_grid_coordinate(column, row, offset)
+						grid_tiles[current_grid_position.x][current_grid_position.y] = grid_tiles[previous_grid_position.x][previous_grid_position.y]
+						grid_tiles[previous_grid_position.x][previous_grid_position.y] = null
+		move_tetromino(tetromino)
+
+
+
+
+
+
+
+
+
+
+
+
 # Grid Variables
 export(int) var number_of_columns
 export(int) var number_of_rows

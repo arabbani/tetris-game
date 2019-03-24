@@ -72,11 +72,12 @@ func create_tetromino_tiles():
 			for row in pattern_flags.size():
 				active_tetromino.tiles[column].append(null)
 				if pattern_flags[row]:
-					var loops = 0
-					var tile = create_tile()
-					while match_at(column, row, tile.color) && loops < 100:
-						loops += 1
-						tile = create_tile()
+					var tile = available_tiles[column].instance()
+					#var loops = 0
+					#var tile = create_tile()
+					#while match_at(column, row, tile.color) && loops < 100:
+					#	loops += 1
+					#	tile = create_tile()
 					add_child(tile)
 					tile.position = grid_to_pixel(column, row, active_tetromino.offset())
 					active_tetromino.tiles[column][row] = tile
@@ -134,31 +135,15 @@ func move_down_fast():
 	lock_tetromino()
 
 # move tetromino
-func move_tetromino():
-	var pattern = active_tetromino.get_pattern()
-	for column in pattern.size():
-		var pattern_flags = pattern[column]
-		for row in pattern_flags.size():
-			if pattern_flags[row]:
-				var tile = active_tetromino.tiles[column][row]
-				if tile != null:
-					tile.move(grid_to_pixel(column, row, active_tetromino.offset()))
-
-# move the destroyed tetromino
-func move_destroyed_tetromino(tetromino, move_count):
+func move_tetromino(tetromino = active_tetromino):
 	var pattern = tetromino.get_pattern()
 	for column in pattern.size():
 		var pattern_flags = pattern[column]
 		for row in pattern_flags.size():
 			if pattern_flags[row]:
-				var offset = tetromino.offset()
-				var previous_grid_position = tetromino_to_grid_coordinate(column, row, offset - move_count)
-				var current_grid_position = tetromino_to_grid_coordinate(column, row, offset)
-				grid_tiles[current_grid_position.x][current_grid_position.y] = grid_tiles[previous_grid_position.x][previous_grid_position.y]
-				grid_tiles[previous_grid_position.x][previous_grid_position.y] = null
 				var tile = tetromino.tiles[column][row]
 				if tile != null:
-					tile.move(grid_to_pixel(column, row, offset))
+					tile.move(grid_to_pixel(column, row, tetromino.offset()))
 
 
 
@@ -184,7 +169,7 @@ func lock_tetromino():
 				}
 	if game_state != GameStates.GAME_OVER:
 		grid_tetrominoes.append(active_tetromino)
-		get_parent().get_node("find_matches_timer").start()
+		find_matches()
 
 # check whether there is a match in the grid
 func find_matches():
@@ -226,23 +211,22 @@ func destroy_matched_tiles():
 				if get_grid_tile(column, row).matched:
 					get_grid_tile(column, row).queue_free()
 					var tetromino = grid_tiles[column][row]["tetromino"]
-					var tetromino_position = grid_to_tetromino_coordinate(column, row, tetromino.offset())
-					tetromino.clear_pattern_flag(tetromino_position)
+					tetromino.clear_pattern_flag(grid_to_tetromino_coordinate(column, row, tetromino.offset()))
 					grid_tiles[column][row] = null
-	#get_parent().get_node("collapse_timer").start()
+	get_parent().get_node("collapse_timer").start()
 	current_matches.clear()
-	create_new_tetromino()
 
 # collapse the tetrominoes
 func collapse_tetrominoes():
 	for i in grid_tetrominoes.size():
-		var move_count = 0
 		var tetromino = grid_tetrominoes[i]
-		while move_allowed(tetromino.get_pattern(), tetromino.offset() + Vector2(0, move_count + 1)):
+		#print(tetromino.get_pattern())
+		print("#####################")
+		print(i)
+		while move_allowed(tetromino.get_pattern(), tetromino.offset() + Vector2(0, 1)):
 			print("MOVE DOWN")
-			move_count += 1
 			tetromino.move_down() 
-		move_destroyed_tetromino(tetromino, Vector2(0, move_count))
+		print("@@@@@@@@@@@@@")
 	create_new_tetromino()
 
 
@@ -293,18 +277,21 @@ func match_at(column, row, color):
 
 # check whether the move is allowed
 func move_allowed(pattern, offset):
+	var flag_exist = false
 	for column in pattern.size():
 		var pattern_flags = pattern[column]
 		for row in pattern_flags.size():
 			if pattern_flags[row]:
+				flag_exist = true
 				var grid_position = tetromino_to_grid_coordinate(column, row, offset)
 				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
 					return false
 				if grid_position.y < 0:
 					continue
 				if !is_tile_null(grid_position.x, grid_position.y):
+					print("NOT NULL")
 					return false
-	return true
+	return flag_exist
 
 
 
@@ -593,9 +580,10 @@ class Tetromino:
 	]
 	
 	func _init():
-		tetromino = available_tetrominoes[floor(rand_range(0, available_tetrominoes.size()))]
-		#var tetromino = available_tetrominoes[6]
-		active_index = floor(rand_range(0, tetromino["patterns"].size()))
+		#tetromino = available_tetrominoes[floor(rand_range(0, available_tetrominoes.size()))]
+		tetromino = available_tetrominoes[6]
+		active_index = 0
+		#active_index = floor(rand_range(0, tetromino["patterns"].size()))
 	
 	func get_pattern(index = active_index):
 		return tetromino["patterns"][index]
