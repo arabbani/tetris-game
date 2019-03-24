@@ -3,6 +3,21 @@ extends Node2D
 
 
 
+for column in pattern.size():
+		var pattern_flags = pattern[column]
+		for row in range(pattern_flags.size() - 1, 0, -1):
+			if pattern_flags[row]:
+				flag_exist = true
+				var grid_position = tetromino_to_grid_coordinate(column, row, offset)
+				print(grid_position)
+				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
+					return false
+				if grid_position.y < 0:
+					continue
+				if !is_tile_null(grid_position.x, grid_position.y):
+					#print("NOT NULL")
+					return false
+
 
 
 
