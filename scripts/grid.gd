@@ -2,6 +2,17 @@ extends Node2D
 
 
 
+for i in tiles.size():
+			array.append([])
+			var tile_row = tiles[i]
+			var size = tile_row.size()
+			for j in size:
+				array[i].append(null)
+		for i in tiles.size():
+			var tile_row = tiles[i]
+			var size = tile_row.size()
+			for j in size:
+				array[j][i] = tiles[i][size - 1 - j]
 
 for column in pattern.size():
 		var pattern_flags = pattern[column]

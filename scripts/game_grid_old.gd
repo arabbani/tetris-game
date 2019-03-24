@@ -72,22 +72,18 @@ func create_tetromino_tiles():
 			for column in row_flags.size():
 				active_tetromino.tiles[row].append(null)
 				if row_flags[column]:
+					#var tile = available_tiles[row].instance()
 					var loops = 0
 					var tile = create_tile()
 					match active_tetromino.tetromino["name"]:
 						"J", "T", "L", "I":
-							#while match_at(row, column, tile.color) && loops < 100:
-							#	loops += 1
-							#	tile = create_tile()
-							pass
+							while match_at(row, column, tile.color) && loops < 100:
+								loops += 1
+								tile = create_tile()
 					add_child(tile)
 					tile.position = grid_to_pixel(row, column, active_tetromino.offset())
 					active_tetromino.tiles[row][column] = tile
 		start_move_down_timer()
-
-# create a new tile
-func create_tile():
-	return available_tiles[floor(rand_range(0, available_tiles.size()))].instance()
 
 
 
@@ -107,7 +103,7 @@ func move_right():
 
 # rotate tetromino
 func rotate():
-	var rotated_index =  active_tetromino.next_index()
+	var rotated_index = active_tetromino.next_index()
 	var rotated_pattern = active_tetromino.get_pattern(rotated_index)
 	var offset = active_tetromino.offset(rotated_index)
 	var wall_kick = 0
@@ -331,6 +327,10 @@ func get_start_pixel(offset):
 	var x_start = grid_x_start + tile_size * offset.x
 	var y_start = grid_y_start + tile_size * offset.y
 	return Vector2(x_start, y_start)
+
+# create a new tile
+func create_tile():
+	return available_tiles[floor(rand_range(0, available_tiles.size()))].instance()
 
 # make grid tiles
 func make_grid_tiles():
@@ -578,10 +578,10 @@ class Tetromino:
 	]
 	
 	func _init():
-		tetromino = available_tetrominoes[floor(rand_range(0, available_tetrominoes.size()))]
-		active_index = floor(rand_range(0, tetromino["patterns"].size()))
-		#tetromino = available_tetrominoes[0]
-		#active_index = 0
+		#tetromino = available_tetrominoes[floor(rand_range(0, available_tetrominoes.size()))]
+		#active_index = floor(rand_range(0, tetromino["patterns"].size()))
+		tetromino = available_tetrominoes[0]
+		active_index = 0
 	
 	func get_pattern(index = active_index):
 		return tetromino["patterns"][index]
@@ -610,11 +610,15 @@ class Tetromino:
 		var array = []
 		for i in tiles.size():
 			array.append([])
-			var row_tiles = tiles[i]
-			var size = row_tiles.size()
+			var tile_row = tiles[i]
+			var size = tile_row.size()
 			for j in size:
 				array[i].append(null)
-				array[i][j] = tiles[size - 1 - j][i]
+		for i in tiles.size():
+			var tile_row = tiles[i]
+			var size = tile_row.size()
+			for j in size:
+				array[j][i] = tiles[i][size - 1 - j]
 		tiles = array
 	
 	func clear_pattern_flag(position):
