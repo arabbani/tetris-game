@@ -41,21 +41,30 @@ wait_time = 1.0
 one_shot = false
 autostart = false
 
-[node name="destroy_timer" type="Timer" parent="." index="3"]
+[node name="find_matches_timer" type="Timer" parent="." index="3"]
+
+process_mode = 1
+wait_time = 0.1
+one_shot = true
+autostart = false
+
+[node name="destroy_timer" type="Timer" parent="." index="4"]
 
 process_mode = 1
 wait_time = 0.4
 one_shot = true
 autostart = false
 
-[node name="collapse_timer" type="Timer" parent="." index="4"]
+[node name="collapse_timer" type="Timer" parent="." index="5"]
 
 process_mode = 1
-wait_time = 0.2
+wait_time = 0.4
 one_shot = true
 autostart = false
 
 [connection signal="timeout" from="move_down_timer" to="game_grid" method="_on_move_down_timer_timeout"]
+
+[connection signal="timeout" from="find_matches_timer" to="game_grid" method="_on_find_matches_timer_timeout"]
 
 [connection signal="timeout" from="destroy_timer" to="game_grid" method="_on_destroy_timer_timeout"]
 
