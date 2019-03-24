@@ -31,7 +31,9 @@ var current_matches = []
 
 func dummy_tile():
 	var tile = available_tiles[0].instance()
-	grid_tiles[7][5]["tile"] = tile
+	grid_tiles[7][5] = {
+		"tile": tile
+	}
 	add_child(tile)
 	tile.position = grid_to_pixel(7, 5)
 
@@ -138,7 +140,7 @@ func move_down_fast():
 	while move_allowed(active_tetromino.get_pattern(), active_tetromino.offset() + Vector2(0, 1)):
 		active_tetromino.move_down()
 	move_tetromino()
-	lock_tetromino()
+	#lock_tetromino()
 
 # move tetromino
 func move_tetromino(tetromino = active_tetromino):
@@ -306,31 +308,18 @@ func move_allowed(pattern, offset):
 ################################## UTILITY METHODS ######################################
 
 # convert grid coordinate to tetromino coordinate
-func grid_to_tetromino_coordinate(column, row, offset):
-	var pixel_position = grid_to_pixel(column, row)
-	return pixel_to_grid(pixel_position.x, pixel_position.y, get_start_pixel(offset))
+func grid_to_tetromino_coordinate(row, column, offset):
+	return Vector2(column - offset.x, row - offset.y)
 
 # convert tetromino coordinate to grid coordinate
 func tetromino_to_grid_coordinate(row, column, offset):
 	return Vector2(column + offset.x, row + offset.y)
-
-# convert pixel position to grid position
-func pixel_to_grid(pixel_x, pixel_y, start = Vector2(grid_x_start, grid_y_start)):
-	var column = round((pixel_x - start.x) / tile_size)
-	var row = round((pixel_y - start.y) / tile_size)
-	return Vector2(column, row)
 
 # convert grid position to pixel position
 func grid_to_pixel(row, column, offset = Vector2(0 , 0)):
 	var pixel_x = grid_x_start + (column + offset.x) * tile_size
 	var pixel_y = grid_y_start + (row + offset.y) * tile_size
 	return Vector2(pixel_x, pixel_y)
-
-# calculate start pixel
-func get_start_pixel(offset):
-	var x_start = grid_x_start + tile_size * offset.x
-	var y_start = grid_y_start + tile_size * offset.y
-	return Vector2(x_start, y_start)
 
 # make grid tiles
 func make_grid_tiles():
