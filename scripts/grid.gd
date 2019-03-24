@@ -2,37 +2,27 @@ extends Node2D
 
 
 
-for i in tiles.size():
-			array.append([])
-			var tile_row = tiles[i]
-			var size = tile_row.size()
-			for j in size:
-				array[i].append(null)
-		for i in tiles.size():
-			var tile_row = tiles[i]
-			var size = tile_row.size()
-			for j in size:
-				array[j][i] = tiles[i][size - 1 - j]
-
-for column in pattern.size():
-		var pattern_flags = pattern[column]
-		for row in range(pattern_flags.size() - 1, 0, -1):
-			if pattern_flags[row]:
-				flag_exist = true
-				var grid_position = tetromino_to_grid_coordinate(column, row, offset)
-				print(grid_position)
-				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
-					return false
-				if grid_position.y < 0:
-					continue
-				if !is_tile_null(grid_position.x, grid_position.y):
-					#print("NOT NULL")
-					return false
-
-
-
-
-
+for row in pattern.size():
+			for column in pattern[row].size():
+				if pattern[row][colum]:
+					var current_position = tetromino_to_grid_coordinate(row, column, offset)
+					var previous_position = current_position + Vector2(0, -move_count)
+					grid_tiles[current_position.y][current_position.x] = grid_tiles[previous_position.y][previous_position.x]
+					grid_tiles[previous_position.y][previous_position.x] = null
+		#print("@@@@@@@@@@@@@")
+		move_tetromino(tetromino)
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 
 
