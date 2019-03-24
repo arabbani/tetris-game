@@ -123,9 +123,7 @@ func rotate():
 
 # move tetromino down
 func move_down():
-	#print("TTTTTTT")
 	if move_allowed(active_tetromino.get_pattern(), active_tetromino.offset() + Vector2(0, 1)):
-		#print("DOWN")
 		active_tetromino.move_down()
 		move_tetromino()
 	else:
@@ -142,7 +140,7 @@ func move_down_fast():
 # move tetromino
 func move_tetromino(tetromino = active_tetromino):
 	var pattern = tetromino.get_pattern()
-	for row in pattern.size():
+	for row in range(pattern.size() - 1, -1, -1):
 		var row_flags = pattern[row]
 		for column in row_flags.size():
 			if row_flags[column]:
@@ -286,19 +284,17 @@ func match_at(row, column, color):
 # check whether the move is allowed
 func move_allowed(pattern, offset):
 	var flag_exist = false
-	for row in pattern.size():
+	for row in range(pattern.size() - 1, 0, -1):
 		var row_flags = pattern[row]
 		for column in row_flags.size():
 			if row_flags[column]:
 				flag_exist = true
 				var grid_position = tetromino_to_grid_coordinate(row, column, offset)
-				print(grid_position)
 				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
 					return false
 				if grid_position.y < 0:
 					continue
 				if !is_tile_null(grid_position.y, grid_position.x):
-					#print("NOT NULL")
 					return false
 	return flag_exist
 
