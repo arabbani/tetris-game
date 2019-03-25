@@ -32,7 +32,7 @@ columns = 16
 rows = 24
 tile_size = 64
 grid_x_start = 60
-grid_y_start = 230
+grid_y_start = 232
 
 [node name="move_down_timer" type="Timer" parent="." index="2"]
 
