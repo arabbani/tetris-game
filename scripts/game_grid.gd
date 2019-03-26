@@ -42,7 +42,7 @@ func dummy_tile():
 
 func _ready():
 	randomize()
-	grid_tiles = make_grid_tiles()
+	grid_tiles = make_grid()
 	game_state = GameStates.PLAYING
 	movement = MoveStates.INACTIVE
 	#dummy_tile()
@@ -163,7 +163,7 @@ func move_down_fast():
 	lock_tetromino()
 
 # check whether the move is allowed
-func move_allowed(pattern, offset, tetromino = active_tetromino):
+func move_allowed(pattern, offset):
 	for row in range(pattern.size() - 1, -1, -1):
 		for column in pattern[row].size():
 			if pattern[row][column]:
@@ -173,8 +173,8 @@ func move_allowed(pattern, offset, tetromino = active_tetromino):
 				if grid_position.y < 0:
 					continue
 				if !is_grid_tile_null(grid_position.y, grid_position.x):
-					if row + 1 < tetromino.get_pattern().size():
-						if !tetromino.get_pattern()[row + 1][column]:
+					if row + 1 < pattern.size():
+						if !pattern[row + 1][column]:
 							return false
 					else:
 						return false
@@ -279,7 +279,7 @@ func collapse_tetrominoes():
 	for i in grid_tetrominoes.size():
 		var tetromino = grid_tetrominoes[i]
 		var move_count = 0
-		while move_allowed(tetromino.get_pattern(), tetromino.offset() + Vector2(0, 1), tetromino):
+		while move_allowed(tetromino.get_pattern(), tetromino.offset() + Vector2(0, 1)):
 			tetromino.move_down() 
 			move_count += 1
 		if move_count > 0:
@@ -355,7 +355,7 @@ func get_grid_tile(row, column):
 	return grid_tiles[row][column]["tile"]
 
 # make grid tiles
-func make_grid_tiles():
+func make_grid():
 	var array = []
 	for row in rows:
 		array.append([])
