@@ -3,6 +3,28 @@ extends Node2D
 
 
 
+if move_count > 0:
+			var pattern = tetromino.get_pattern()
+			var offset = tetromino.offset()
+			for row in range(pattern.size() - 1, -1, -1):
+				for column in pattern[row].size():
+					if pattern[row][column]:
+						var current_position = tetromino_to_grid_coordinate(row, column, offset)
+						var previous_position = current_position + Vector2(0, -move_count)
+						grid_tiles[current_position.y][current_position.x] = grid_tiles[previous_position.y][previous_position.x]
+						grid_tiles[previous_position.y][previous_position.x] = null
+			move_tetromino(tetromino)
+
+
+
+
+
+
+
+
+
+
+
 
 
 var pattern = tetromino.get_pattern()
