@@ -118,8 +118,8 @@ func get_tetromino_tile(row, column):
 func initial_move():
 	for i in active_tetromino.initial_move():
 		move_down()
-	set_movement_inactive()
 	start_move_down_timer()
+	set_movement_inactive()
 
 # move tetromino left
 func move_left():
@@ -159,6 +159,7 @@ func move_down():
 		move_tetromino()
 	else:
 		stop_move_down_timer()
+		set_movement_active()
 		lock_tetromino()
 
 # move tetromino down in one move
@@ -355,7 +356,6 @@ func check_movement():
 		stop_move_down_timer()
 		set_movement_active()
 		move_down_fast()
-		set_movement_inactive()
 
 # set movement active
 func set_movement_active():
