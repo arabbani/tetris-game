@@ -12,7 +12,7 @@ func _ready():
 # move the tile
 func move(target):
 	move_tween.interpolate_property(self, "position", position, target, 0.3, 
-	                            Tween.TRANS_BOUNCE, Tween.EASE_OUT)
+	                            Tween.TRANS_SINE, Tween.EASE_OUT)
 	move_tween.start()
 
 func dim():

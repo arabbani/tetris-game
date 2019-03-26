@@ -213,11 +213,11 @@ func lock_tetromino():
 					"tetromino": active_tetromino
 				}
 	if game_state != GameStates.GAME_OVER:
-		#get_parent().get_node("find_matches_timer").start()
-		find_matches()
+		get_parent().get_node("find_matches_timer").start()
 
 # check whether there is a match in the grid
 func find_matches():
+	var match_found = false
 	for row in rows:
 		for column in columns:
 			if !is_grid_tile_null(row, column):
@@ -225,16 +225,21 @@ func find_matches():
 				if row > 0 and row < rows - 1:
 					if !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row + 1, column):
 						if is_matched_color(row - 1, column, color) and is_matched_color(row + 1, column, color):
+							match_found = true
 							match_tile(row - 1, column)
 							match_tile(row, column)
 							match_tile(row + 1, column)
 				if column > 0 and column < columns - 1:
 					if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column + 1):
 						if is_matched_color(row, column - 1, color) and is_matched_color(row, column + 1, color):
+							match_found = true
 							match_tile(row, column - 1)
 							match_tile(row, column)
 							match_tile(row, column + 1)
-	get_parent().get_node("destroy_timer").start()
+	if match_found:
+		get_parent().get_node("destroy_timer").start()
+	else:
+		create_tetromino()
 
 # set the tile as matched
 func match_tile(row, column):
@@ -425,7 +430,8 @@ class Tetromino:
 				]
 			],
 			"x_offset": 6,
-			"y_offset": [-2, -3, -3, -3]
+			"y_offset": [0, 0, -1, 0]
+			#[-2, -3, -3, -3]
 		},
 		{
 			"name": "S",
@@ -452,7 +458,8 @@ class Tetromino:
 				]
 			],
 			"x_offset": 6,
-			"y_offset": [-2, -3, -3, -3]
+			"y_offset": [0, 0, -1, 0]
+			#[-2, -3, -3, -3]
 		},
 		{
 			"name": "J",
@@ -479,7 +486,8 @@ class Tetromino:
 				]
 			],
 			"x_offset": 6,
-			"y_offset": [-3, -2, -3, -3]
+			"y_offset": [0, 0, 0, -1]
+			#[-3, -2, -3, -3]
 		},
 		{
 			"name": "T",
@@ -506,7 +514,8 @@ class Tetromino:
 				]
 			],
 			"x_offset": 6,
-			"y_offset": [-3, -3, -2, -3]
+			"y_offset": [-1, 0, 0, 0]
+			#[-3, -3, -2, -3]
 		},
 		{
 			"name": "L",
@@ -533,7 +542,8 @@ class Tetromino:
 				]
 			],
 			"x_offset": 6,
-			"y_offset": [-3, -3, -3, -2]
+			"y_offset": [0, -1, 0, 0]
+			#[-3, -3, -3, -2]
 		},
 		{
 			"name": "I",
@@ -564,7 +574,8 @@ class Tetromino:
 				]
 			],
 			"x_offset": 6,
-			"y_offset": [-4, -2, -4, -3]
+			"y_offset": [0, -1, 0, -2]
+			#[-4, -2, -4, -3]
 		},
 		{
 			"name": "O",
@@ -595,7 +606,8 @@ class Tetromino:
 				]
 			],
 			"x_offset": 6,
-			"y_offset": [-3, -3, -3, -3]
+			"y_offset": [-1, -1, -1, -1]
+			#[-3, -3, -3, -3]
 		}
 	]
 	

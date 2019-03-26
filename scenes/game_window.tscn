@@ -44,7 +44,7 @@ autostart = false
 [node name="find_matches_timer" type="Timer" parent="." index="3"]
 
 process_mode = 1
-wait_time = 0.1
+wait_time = 0.4
 one_shot = true
 autostart = false
 
@@ -58,7 +58,7 @@ autostart = false
 [node name="collapse_timer" type="Timer" parent="." index="5"]
 
 process_mode = 1
-wait_time = 0.4
+wait_time = 0.1
 one_shot = true
 autostart = false
 
