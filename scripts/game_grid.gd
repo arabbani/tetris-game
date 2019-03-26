@@ -49,7 +49,7 @@ func _ready():
 	create_tetromino()
 
 func _process(delta):
-	if movement != MoveStates.ACTIVE:
+	if !is_movement_active():
 		check_movement()
 
 
@@ -159,7 +159,6 @@ func move_down_fast():
 	while move_allowed(active_tetromino.get_pattern(), active_tetromino.offset() + Vector2(0, 1)):
 		active_tetromino.move_down()
 	move_tetromino()
-	stop_move_down_timer()
 	lock_tetromino()
 
 # check whether the move is allowed
@@ -308,27 +307,40 @@ func collapse_tetrominoes():
 func check_movement():
 	if Input.is_action_just_pressed("ui_left"):
 		stop_move_down_timer()
-		movement = MoveStates.ACTIVE
+		set_movement_active()
 		move_left()
 		start_move_down_timer()
-		movement = MoveStates.INACTIVE
+		set_movement_inactive()
 	elif Input.is_action_just_pressed("ui_right"):
 		stop_move_down_timer()
-		movement = MoveStates.ACTIVE
+		set_movement_active()
 		move_right()
 		start_move_down_timer()
-		movement = MoveStates.INACTIVE
+		set_movement_inactive()
 	elif Input.is_action_just_pressed("ui_up"):
 		stop_move_down_timer()
-		movement = MoveStates.ACTIVE
+		set_movement_active()
 		rotate()
 		start_move_down_timer()
-		movement = MoveStates.INACTIVE
+		set_movement_inactive()
 	elif Input.is_action_just_pressed("ui_down"):
 		stop_move_down_timer()
-		movement = MoveStates.ACTIVE
+		set_movement_active()
 		move_down_fast()
-		movement = MoveStates.INACTIVE
+		start_move_down_timer()
+		set_movement_inactive()
+
+# set movement active
+func set_movement_active():
+	movement = MoveStates.ACTIVE
+
+# set movement inactive
+func set_movement_inactive():
+	movement = MoveStates.INACTIVE
+
+# check if movement is active
+func is_movement_active():
+	return movement == MoveStates.ACTIVE
 
 # check if the grid tile is null
 func is_grid_tile_null(row, column):
