@@ -7,6 +7,7 @@ export(int) var tile_size
 export(int) var grid_x_start
 export(int) var grid_y_start
 
+# tiles
 var available_tiles = [
 	preload("res://scenes/tile_1.tscn"),
 	preload("res://scenes/tile_2.tscn"),
@@ -15,15 +16,22 @@ var available_tiles = [
 	preload("res://scenes/tile_5.tscn"),
 	preload("res://scenes/tile_6.tscn")
 ]
+var blank_tile = preload("res://scenes/blank_tile.tscn")
 
+# game states
 enum GameStates { PLAYING, GAME_OVER }
 enum MoveStates { ACTIVE, INACTIVE }
 var game_state
 var movement
 
+# tetromino variables
 var grid_tiles = []
 var grid_tetrominoes = []
 var active_tetromino = null
+
+# obstacles
+export(PoolVector2Array) var blank_spaces
+
 
 
 ################################## DUMMY ######################################
@@ -42,15 +50,43 @@ func dummy_tile():
 
 func _ready():
 	randomize()
-	grid_tiles = make_grid()
+	create_grid()
+
+func _process(delta):
+	if !is_movement_active():
+		check_movement()
+
+
+
+################################## CREATE GRID ######################################
+
+# create initial grid
+func create_grid():
+	grid_tiles = make_grid_array()
+	draw_blank_spaces()
+
+# draw the blank spaces
+func draw_blank_spaces():
+	for i in blank_spaces.size():
+		var tile = blank_tile.instance()
+		add_child(tile)
+		tile.position = grid_to_pixel(blank_spaces[i].y, blank_spaces[i].x)
+	start_game()
+
+func start_game():
 	game_state = GameStates.PLAYING
 	set_movement_active()
 	#dummy_tile()
 	create_tetromino()
 
-func _process(delta):
-	if !is_movement_active():
-		check_movement()
+# make grid array
+func make_grid_array():
+	var array = []
+	for row in rows:
+		array.append([])
+		for column in columns:
+			array[row].append(null)
+	return array
 
 
 
@@ -169,24 +205,6 @@ func move_down_fast():
 	move_tetromino()
 	lock_tetromino()
 
-# check whether the move is allowed
-func move_allowed(pattern, offset):
-	for row in range(pattern.size() - 1, -1, -1):
-		for column in pattern[row].size():
-			if pattern[row][column]:
-				var grid_position = tetromino_to_grid_coordinate(row, column, offset)
-				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
-					return false
-				if grid_position.y < 0:
-					continue
-				if !is_grid_tile_null(grid_position.y, grid_position.x):
-					if row + 1 < pattern.size():
-						if !pattern[row + 1][column]:
-							return false
-					else:
-						return false
-	return true
-
 # move tetromino
 func move_tetromino(tetromino = active_tetromino):
 	var pattern = tetromino.get_pattern()
@@ -196,6 +214,37 @@ func move_tetromino(tetromino = active_tetromino):
 				var tile = tetromino.tiles[row][column]
 				if tile != null:
 					tile.move(grid_to_pixel(row, column, tetromino.offset()))
+
+# check whether the move is allowed
+func move_allowed(pattern, offset):
+	for row in range(pattern.size() - 1, -1, -1):
+		for column in pattern[row].size(): 
+			if pattern[row][column]:
+				var grid_position = tetromino_to_grid_coordinate(row, column, offset)
+				if grid_position.x < 0 or grid_position.x >= columns or grid_position.y >= rows:
+					return false
+				if grid_position.y < 0:
+					continue 
+				if restricted_move(grid_position):
+					return false
+				if !is_grid_tile_null(grid_position.y, grid_position.x):
+					if row + 1 < pattern.size():
+						if !pattern[row + 1][column]:
+							return false
+					else:
+						return false
+	return true
+
+# check if obstacles exist
+func restricted_move(place):
+	if is_in_array(blank_spaces, place):
+		return true
+
+func is_in_array(array, item):
+	for column in array.size():
+		if array[column] == item:
+			return true
+	return false
 
 
 
@@ -397,15 +446,6 @@ func grid_to_pixel(row, column, offset = Vector2(0 , 0)):
 
 func get_grid_tile(row, column):
 	return grid_tiles[row][column]["tile"]
-
-# make grid tiles
-func make_grid():
-	var array = []
-	for row in rows:
-		array.append([])
-		for column in columns:
-			array[row].append(null)
-	return array
 
 
 

@@ -10,7 +10,6 @@ color = null
 
 [node name="Sprite" type="Sprite" parent="." index="0"]
 
-scale = Vector2( 0.75, 0.75 )
 _sections_unfolded = [ "Transform" ]
 
 [node name="move_tween" type="Tween" parent="." index="1"]
