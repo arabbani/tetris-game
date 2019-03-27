@@ -8,9 +8,20 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Object",
+"class": "Tetromino",
+"language": "GDScript",
+"path": "res://scripts/tetromino.gd"
+}, {
+"base": "Node2D",
+"class": "Tile",
+"language": "GDScript",
+"path": "res://scripts/tile.gd"
+} ]
 _global_script_class_icons={
-
+"Tetromino": "",
+"Tile": ""
 }
 
 [application]
