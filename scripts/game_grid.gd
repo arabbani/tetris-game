@@ -154,7 +154,7 @@ func get_tetromino_tile(row, column):
 func initial_move():
 	for i in active_tetromino.initial_move():
 		move_down()
-	#start_move_down_timer()
+	start_move_down_timer()
 	set_movement_inactive()
 
 # move tetromino left
@@ -170,7 +170,7 @@ func move_right():
 		move_tetromino()
 
 # rotate tetromino
-func rotate():
+func rotate_tetris():
 	var rotated_index =  active_tetromino.next_index()
 	var rotated_pattern = active_tetromino.get_pattern(rotated_index)
 	var offset = active_tetromino.offset(rotated_index)
@@ -399,7 +399,7 @@ func check_movement():
 	elif Input.is_action_just_pressed("ui_up"):
 		stop_move_down_timer()
 		set_movement_active()
-		rotate()
+		rotate_tetris()
 		start_move_down_timer()
 		set_movement_inactive()
 	elif Input.is_action_just_pressed("ui_down"):
