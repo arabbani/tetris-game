@@ -154,7 +154,7 @@ func get_tetromino_tile(row, column):
 func initial_move():
 	for i in active_tetromino.initial_move():
 		move_down()
-	start_move_down_timer()
+	#start_move_down_timer()
 	set_movement_inactive()
 
 # move tetromino left
@@ -363,7 +363,8 @@ func after_collapse():
 		for column in columns:
 			if !is_grid_tile_null(row, column):
 				if is_match(row, column, get_grid_tile(row, column).color):
-					find_matches()
+					#find_matches()
+					get_parent().get_node("find_matches_timer").start()
 					return
 	create_tetromino()
 
