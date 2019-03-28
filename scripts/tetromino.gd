@@ -212,7 +212,7 @@ var available_tetrominoes : = [
 		}
 ]
 	
-func _init():
+func _init() -> void:
 	tetromino = available_tetrominoes[floor(rand_range(0, available_tetrominoes.size()))]
 	active_index = floor(rand_range(0, tetromino["patterns"].size()))
 	

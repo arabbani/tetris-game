@@ -48,12 +48,12 @@ func dummy_tile():
 
 ################################## METHOD OVERRIDE ######################################
 
-func _ready():
+func _ready() -> void:
 	randomize()
 	create_grid()
 
 #warning-ignore:unused_argument
-func _process(delta):
+func _process(delta : float) -> void:
 	if !is_movement_active():
 		check_movement()
 
@@ -65,6 +65,19 @@ func _process(delta):
 func create_grid() -> void:
 	grid_tiles = make_grid_array()
 	draw_blank_spaces()
+
+# make grid array
+func make_grid_array() -> Array:
+	var array = []
+	for row in rows:
+		array.append([])
+		for column in columns:
+			array[row].append(null)
+	return array
+
+
+
+################################## CREATE OBSTACLES ######################################
 
 # draw the blank spaces
 func draw_blank_spaces() -> void:
@@ -79,15 +92,6 @@ func start_game() -> void:
 	set_movement_active()
 	#dummy_tile()
 	create_tetromino()
-
-# make grid array
-func make_grid_array() -> Array:
-	var array = []
-	for row in rows:
-		array.append([])
-		for column in columns:
-			array[row].append(null)
-	return array
 
 
 
@@ -112,8 +116,16 @@ func create_tetromino_tiles() -> void:
 					var loops = 0
 					var tile = create_tile()
 					match active_tetromino.tetromino["name"]:
-						"J", "T", "L", "I":
-							while tetromino_tile_match(row, column, tile.type) && loops < 100:
+						"J", "T", "L":
+							while tetromino_tile_match(row, column, tile.type) and loops < 100:
+								loops += 1
+								tile = create_tile()
+						"O":
+							while tetromino_tile_box_match(row, column, tile.type) and loops < 100:
+								loops += 1
+								tile = create_tile()
+						"I":
+							while (tetromino_tile_match(row, column, tile.type) or tetromino_tile_duo_match(row, column, tile.type)) and loops < 100:
 								loops += 1
 								tile = create_tile()
 					add_child(tile)
@@ -133,6 +145,20 @@ func tetromino_tile_match(row : int, column : int, type) -> bool:
 	if row > 1:
 		if !is_tetromino_tile_null(row - 1, column) and !is_tetromino_tile_null(row - 2, column):
 			return is_matched_tetromino_tile(row - 1, column, type) and is_matched_tetromino_tile(row - 2, column, type)
+	return false
+
+# check if the new tile is a box match
+func tetromino_tile_box_match(row, column, type):
+	if column > 0 and row > 0:
+		if !is_tetromino_tile_null(row, column - 1) and !is_tetromino_tile_null(row - 1, column) and !is_tetromino_tile_null(row - 1, column - 1):
+			return is_matched_tetromino_tile(row, column - 1, type) and is_matched_tetromino_tile(row - 1, column, type) and is_matched_tetromino_tile(row - 1, column - 1, type)
+	return false
+
+# check if the new tile is a duo match
+func tetromino_tile_duo_match(row : int, column : int, type) -> bool:
+	if column > 2:
+		if !is_tetromino_tile_null(row, column - 1) and !is_tetromino_tile_null(row, column - 2) and !is_tetromino_tile_null(row, column - 3):
+			return is_matched_tetromino_tile(row, column - 1, type) and is_matched_tetromino_tile(row, column - 3, get_tetromino_tile(row, column - 2).type)
 	return false
 
 # check if the tetromino tile is null
@@ -476,8 +502,3 @@ func _on_destroy_timer_timeout() -> void:
 
 func _on_collapse_timer_timeout() -> void:
 	collapse_tetrominoes()
-
-
-
-################################# TETROMINO CLASS ########################################
-

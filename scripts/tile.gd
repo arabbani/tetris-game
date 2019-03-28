@@ -8,7 +8,7 @@ export(Tile_Types) var type
 var move_tween
 var matched = false
 
-func _ready():
+func _ready() -> void:
 	move_tween = get_node("move_tween")
 
 # move the tile
