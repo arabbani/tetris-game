@@ -35,7 +35,7 @@ blank_spaces = PoolVector2Array( 7, 6, 1, 10, 12, 10 )
 
 [node name="move_down_timer" type="Timer" parent="."]
 
-[node name="find_matches_timer" type="Timer" parent="."]
+[node name="dim_matches_timer" type="Timer" parent="."]
 wait_time = 0.4
 one_shot = true
 
@@ -48,6 +48,6 @@ wait_time = 0.1
 one_shot = true
 
 [connection signal="timeout" from="move_down_timer" to="game_grid" method="_on_move_down_timer_timeout"]
-[connection signal="timeout" from="find_matches_timer" to="game_grid" method="_on_find_matches_timer_timeout"]
+[connection signal="timeout" from="dim_matches_timer" to="game_grid" method="_on_dim_matches_timer_timeout"]
 [connection signal="timeout" from="destroy_timer" to="game_grid" method="_on_destroy_timer_timeout"]
 [connection signal="timeout" from="collapse_timer" to="game_grid" method="_on_collapse_timer_timeout"]

@@ -148,7 +148,7 @@ func tetromino_tile_tripple_match(row : int, column : int, type) -> bool:
 	return false
 
 # check if the tetromino tile is a box match
-func tetromino_tile_box_match(row, column, type):
+func tetromino_tile_box_match(row : int, column : int, type) -> bool:
 	if column > 0 and row > 0:
 		if !is_tetromino_tile_null(row, column - 1) and !is_tetromino_tile_null(row - 1, column) and !is_tetromino_tile_null(row - 1, column - 1):
 			return is_matched_tetromino_tile(row, column - 1, type) and is_matched_tetromino_tile(row - 1, column, type) and is_matched_tetromino_tile(row - 1, column - 1, type)
@@ -299,56 +299,78 @@ func lock_tetromino() -> void:
 					"tetromino": active_tetromino
 				}
 	if game_state != GameStates.GAME_OVER:
-		get_parent().get_node("find_matches_timer").start()
+		check_matches()
+
+func check_matches():
+	if match_found():
+		get_parent().get_node("dim_matches_timer").start()
+	else:
+		create_tetromino()
 
 # check whether there is a match in the grid
-func find_matches() -> void:
-	var match_found = false
+func match_found() -> bool:
+	var matched = false
 	for row in rows:
 		for column in columns:
 			if !is_grid_tile_null(row, column):
 				var type = get_grid_tile(row, column).type
-				if row > 0 and row < rows - 1:
-					if !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row + 1, column):
-						if is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row + 1, column, type):
-							match_found = true
-							match_tile(row - 1, column)
-							match_tile(row, column)
-							match_tile(row + 1, column)
-				if column > 0 and column < columns - 1:
-					if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column + 1):
-						if is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column + 1, type):
-							match_found = true
-							match_tile(row, column - 1)
-							match_tile(row, column)
-							match_tile(row, column + 1)
-	if match_found:
-		get_parent().get_node("destroy_timer").start()
-	else:
-		create_tetromino()
+				if grid_tile_tripple_match(row, column, type):
+					matched = true
+				if grid_tile_box_match(row, column, type):
+					matched = true
+				if grid_tile_duo_match(row, column, type):
+					matched = true
+	return matched
+
+# dim the matched grid tiles
+func dim_matches():
+	for row in rows:
+		for column in columns:
+			if !is_grid_tile_null(row, column):
+				if get_grid_tile(row, column).matched:
+					dim_tile(row, column)
+	get_parent().get_node("destroy_timer").start()
 
 # check if the grid tile is a tripple match
 func grid_tile_tripple_match(row : int, column : int, type) -> bool:
 	if column > 1:
 		if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column - 2):
-			return is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column - 2, type)
+			if is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column - 2, type):
+				match_tile(row, column)
+				match_tile(row, column - 1)
+				match_tile(row, column - 2)
+				return true
 	if row > 1:
 		if !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row - 2, column):
-			return is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row - 2, column, type)
+			if is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row - 2, column, type):
+				match_tile(row, column)
+				match_tile(row - 1, column)
+				match_tile(row - 2, column)
+				return true
 	return false
 
 # check if the grid tile is a box match
-func grid_tile_box_match(row, column, type):
+func grid_tile_box_match(row : int, column : int, type) -> bool:
 	if column > 0 and row > 0:
 		if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row - 1, column - 1):
-			return is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row - 1, column - 1, type)
+			if is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row - 1, column - 1, type):
+				match_tile(row, column)
+				match_tile(row, column - 1)
+				match_tile(row - 1, column)
+				match_tile(row - 1, column - 1)
+				return true
 	return false
 
 # check if the grid tile is a duo match
 func grid_tile_duo_match(row : int, column : int, type) -> bool:
 	if column > 2:
 		if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column - 2) and !is_grid_tile_null(row, column - 3):
-			return is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column - 3, get_grid_tile(row, column - 2).type)
+			if is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column - 3, get_grid_tile(row, column - 2).type):
+				match_tile(row, column)
+				match_tile(row, column - 1)
+				match_tile(row, column - 2)
+				match_tile(row, column - 3)
+				return true
 	return false
 
 # check if the grid tile is null
@@ -363,9 +385,13 @@ func get_grid_tile(row : int, column : int) -> Tile:
 	return grid_tiles[row][column]["tile"]
 
 # set the tile as matched
-func match_tile(row, column) -> void:
+func match_tile(row: int, column : int) -> void:
 	var tile = get_grid_tile(row, column)
 	tile.matched = true
+
+# dim the tile
+func dim_tile(row: int, column : int) -> void:
+	var tile = get_grid_tile(row, column)
 	tile.dim()
 
 # destroy matched tiles
@@ -379,6 +405,7 @@ func destroy_matched_tiles() -> void:
 					grid_tiles[row][column] = null
 	remove_cleared_tetromino()
 
+# romve the cleared tetrominoes
 func remove_cleared_tetromino() -> void:
 	var remove_tetrominoes = []
 	for i in grid_tetrominoes.size():
@@ -419,18 +446,7 @@ func collapse_tetrominoes() -> void:
 						grid_tiles[current_position.y][current_position.x] = grid_tiles[previous_position.y][previous_position.x]
 						grid_tiles[previous_position.y][previous_position.x] = null
 			move_tetromino(tetromino)
-	after_collapse()
-
-func after_collapse() -> void:
-	for row in rows:
-		for column in columns:
-			if !is_grid_tile_null(row, column):
-				var type = get_grid_tile(row, column).type
-				if grid_tile_tripple_match(row, column, type) or grid_tile_box_match(row, column, type) or grid_tile_duo_match(row, column, type):
-					#find_matches()
-					get_parent().get_node("find_matches_timer").start()
-					return
-	create_tetromino()
+	check_matches()
 
 
 
@@ -509,8 +525,8 @@ func get_move_down_timer() -> Node:
 func _on_move_down_timer_timeout() -> void:
 	move_down()
 
-func _on_find_matches_timer_timeout() -> void:
-	find_matches()
+func _on_dim_matches_timer_timeout() -> void:
+	dim_matches()
 
 func _on_destroy_timer_timeout() -> void:
 	destroy_matched_tiles()
