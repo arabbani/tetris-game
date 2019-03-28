@@ -276,7 +276,7 @@ func is_in_array(array : Array, item : Vector2) -> bool:
 
 
 
-################################## DESTROY MATCHED TILES ######################################
+################################## FIND MATCHES ######################################
 
 # locks the current tetromino
 func lock_tetromino() -> void:
@@ -320,16 +320,9 @@ func match_found() -> bool:
 					matched = true
 				if grid_tile_duo_match(row, column, type):
 					matched = true
+				if grid_tile_quad_match(row, column, type):
+					matched = true
 	return matched
-
-# dim the matched grid tiles
-func dim_matches():
-	for row in rows:
-		for column in columns:
-			if !is_grid_tile_null(row, column):
-				if get_grid_tile(row, column).matched:
-					dim_tile(row, column)
-	get_parent().get_node("destroy_timer").start()
 
 # check if the grid tile is a tripple match
 func grid_tile_tripple_match(row : int, column : int, type) -> bool:
@@ -346,6 +339,26 @@ func grid_tile_tripple_match(row : int, column : int, type) -> bool:
 				match_tile(row, column)
 				match_tile(row - 1, column)
 				match_tile(row - 2, column)
+				return true
+	return false
+
+# check if the grid tile is a tripple match
+func grid_tile_quad_match(row : int, column : int, type) -> bool:
+	if column > 2:
+		if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column - 2) and !is_grid_tile_null(row, column - 3):
+			if is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column - 2, type) and is_matched_grid_tile(row, column - 3, type):
+				match_tile(row, column)
+				match_tile(row, column - 1)
+				match_tile(row, column - 2)
+				match_tile(row, column - 3)
+				return true
+	if row > 2:
+		if !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row - 2, column) and !is_grid_tile_null(row - 3, column):
+			if is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row - 2, column, type) and is_matched_grid_tile(row - 3, column, type):
+				match_tile(row, column)
+				match_tile(row - 1, column)
+				match_tile(row - 2, column)
+				match_tile(row - 3, column)
 				return true
 	return false
 
@@ -384,15 +397,36 @@ func is_matched_grid_tile(row : int, column : int, type) -> bool:
 func get_grid_tile(row : int, column : int) -> Tile:
 	return grid_tiles[row][column]["tile"]
 
+
+
+
+
+################################## ANIMATE MATCHED TILES ######################################
+
 # set the tile as matched
 func match_tile(row: int, column : int) -> void:
 	var tile = get_grid_tile(row, column)
 	tile.matched = true
 
+# dim the matched grid tiles
+func dim_matches():
+	for row in rows:
+		for column in columns:
+			if !is_grid_tile_null(row, column):
+				if get_grid_tile(row, column).matched:
+					dim_tile(row, column)
+	get_parent().get_node("destroy_timer").start()
+
 # dim the tile
 func dim_tile(row: int, column : int) -> void:
 	var tile = get_grid_tile(row, column)
 	tile.dim()
+
+
+
+################################## DESTROY MATCHED TILES ######################################
+
+
 
 # destroy matched tiles
 func destroy_matched_tiles() -> void:
