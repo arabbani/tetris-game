@@ -117,7 +117,7 @@ func create_tetromino_tiles() -> void:
 					var tile = create_tile()
 					match active_tetromino.tetromino["name"]:
 						"J", "T", "L":
-							while tetromino_tile_match(row, column, tile.type) and loops < 100:
+							while tetromino_tile_tripple_match(row, column, tile.type) and loops < 100:
 								loops += 1
 								tile = create_tile()
 						"O":
@@ -125,7 +125,7 @@ func create_tetromino_tiles() -> void:
 								loops += 1
 								tile = create_tile()
 						"I":
-							while (tetromino_tile_match(row, column, tile.type) or tetromino_tile_duo_match(row, column, tile.type)) and loops < 100:
+							while (tetromino_tile_tripple_match(row, column, tile.type) or tetromino_tile_duo_match(row, column, tile.type)) and loops < 100:
 								loops += 1
 								tile = create_tile()
 					add_child(tile)
@@ -137,8 +137,8 @@ func create_tetromino_tiles() -> void:
 func create_tile() -> Tile:
 	return available_tiles[floor(rand_range(0, available_tiles.size()))].instance()
 
-# check if the new tile is a match with the exising tetromino tile
-func tetromino_tile_match(row : int, column : int, type) -> bool:
+# check if the tetromino tile is a tripple match
+func tetromino_tile_tripple_match(row : int, column : int, type) -> bool:
 	if column > 1:
 		if !is_tetromino_tile_null(row, column - 1) and !is_tetromino_tile_null(row, column - 2):
 			return is_matched_tetromino_tile(row, column - 1, type) and is_matched_tetromino_tile(row, column - 2, type)
@@ -147,14 +147,14 @@ func tetromino_tile_match(row : int, column : int, type) -> bool:
 			return is_matched_tetromino_tile(row - 1, column, type) and is_matched_tetromino_tile(row - 2, column, type)
 	return false
 
-# check if the new tile is a box match
+# check if the tetromino tile is a box match
 func tetromino_tile_box_match(row, column, type):
 	if column > 0 and row > 0:
 		if !is_tetromino_tile_null(row, column - 1) and !is_tetromino_tile_null(row - 1, column) and !is_tetromino_tile_null(row - 1, column - 1):
 			return is_matched_tetromino_tile(row, column - 1, type) and is_matched_tetromino_tile(row - 1, column, type) and is_matched_tetromino_tile(row - 1, column - 1, type)
 	return false
 
-# check if the new tile is a duo match
+# check if the tetromino tile is a duo match
 func tetromino_tile_duo_match(row : int, column : int, type) -> bool:
 	if column > 2:
 		if !is_tetromino_tile_null(row, column - 1) and !is_tetromino_tile_null(row, column - 2) and !is_tetromino_tile_null(row, column - 3):
@@ -327,6 +327,41 @@ func find_matches() -> void:
 	else:
 		create_tetromino()
 
+# check if the grid tile is a tripple match
+func grid_tile_tripple_match(row : int, column : int, type) -> bool:
+	if column > 1:
+		if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column - 2):
+			return is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column - 2, type)
+	if row > 1:
+		if !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row - 2, column):
+			return is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row - 2, column, type)
+	return false
+
+# check if the grid tile is a box match
+func grid_tile_box_match(row, column, type):
+	if column > 0 and row > 0:
+		if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row - 1, column - 1):
+			return is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row - 1, column - 1, type)
+	return false
+
+# check if the grid tile is a duo match
+func grid_tile_duo_match(row : int, column : int, type) -> bool:
+	if column > 2:
+		if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column - 2) and !is_grid_tile_null(row, column - 3):
+			return is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column - 3, get_grid_tile(row, column - 2).type)
+	return false
+
+# check if the grid tile is null
+func is_grid_tile_null(row : int, column : int) -> bool:
+	return grid_tiles[row][column] == null
+
+# check whether the tiles are of same type
+func is_matched_grid_tile(row : int, column : int, type) -> bool:
+	return get_grid_tile(row, column).type == type
+
+func get_grid_tile(row : int, column : int) -> Tile:
+	return grid_tiles[row][column]["tile"]
+
 # set the tile as matched
 func match_tile(row, column) -> void:
 	var tile = get_grid_tile(row, column)
@@ -390,21 +425,12 @@ func after_collapse() -> void:
 	for row in rows:
 		for column in columns:
 			if !is_grid_tile_null(row, column):
-				if is_match(row, column, get_grid_tile(row, column).type):
+				var type = get_grid_tile(row, column).type
+				if grid_tile_tripple_match(row, column, type) or grid_tile_box_match(row, column, type) or grid_tile_duo_match(row, column, type):
 					#find_matches()
 					get_parent().get_node("find_matches_timer").start()
 					return
 	create_tetromino()
-
-# check if match exist in the grid
-func is_match(row : int, column : int, type) -> bool:
-	if column > 1:
-		if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column - 2):
-			return is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column - 2, type)
-	if row > 1:
-		if !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row - 2, column):
-			return is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row - 2, column, type)
-	return false
 
 
 
@@ -447,14 +473,6 @@ func set_movement_inactive() -> void:
 func is_movement_active() -> bool:
 	return movement == MoveStates.ACTIVE
 
-# check if the grid tile is null
-func is_grid_tile_null(row : int, column : int) -> bool:
-	return grid_tiles[row][column] == null
-
-# check whether the tiles are of same type
-func is_matched_grid_tile(row : int, column : int, type) -> bool:
-	return get_grid_tile(row, column).type == type
-
 
 
 ################################## UTILITY METHODS ######################################
@@ -472,9 +490,6 @@ func grid_to_pixel(row : int, column : int, offset : = Vector2(0 , 0)) -> Vector
 	var pixel_x = grid_x_start + (column + offset.x) * tile_size
 	var pixel_y = grid_y_start + (row + offset.y) * tile_size
 	return Vector2(pixel_x, pixel_y)
-
-func get_grid_tile(row : int, column : int) -> Tile:
-	return grid_tiles[row][column]["tile"]
 
 
 
