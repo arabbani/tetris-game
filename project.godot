@@ -6,7 +6,23 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=3
+config_version=4
+
+_global_script_classes=[ {
+"base": "Object",
+"class": "Tetromino",
+"language": "GDScript",
+"path": "res://scripts/tetromino.gd"
+}, {
+"base": "Node2D",
+"class": "Tile",
+"language": "GDScript",
+"path": "res://scripts/tile.gd"
+} ]
+_global_script_class_icons={
+"Tetromino": "",
+"Tile": ""
+}
 
 [application]
 
@@ -19,9 +35,9 @@ window/size/width=1080
 window/size/height=1920
 window/size/test_width=360
 window/size/test_height=640
-window/handheld/emulate_touchscreen=true
 window/stretch/mode="2d"
 window/stretch/aspect="keep_width"
+window/handheld/emulate_touchscreen=true
 
 [rendering]
 

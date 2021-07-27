@@ -1,14 +1,21 @@
 extends Node2D
 
-enum Tile_Colors { color_1, color_2, color_3, color_4, color_5, color_6 }
-export(Tile_Colors) var color
+class_name Tile
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
-	pass
+enum Tile_Types { color_1, color_2, color_3, color_4, color_5, color_6 }
+export(Tile_Types) var type
 
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+var move_tween
+var matched = false
+
+func _ready() -> void:
+	move_tween = get_node("move_tween")
+
+# move the tile
+func move(target : Vector2) -> void:
+	move_tween.interpolate_property(self, "position", position, target, 0.3, 
+	                            Tween.TRANS_SINE, Tween.EASE_OUT)
+	move_tween.start()
+
+func dim() -> void:
+	get_node("Sprite").modulate = Color(1, 1, 1, .5)

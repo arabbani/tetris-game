@@ -8,6 +8,27 @@ export(int) var y_start
 export(int) var offset
 export(int) var refill_y_offset
 
+
+
+if row > 0 and row < rows - 1:
+					if !is_grid_tile_null(row - 1, column) and !is_grid_tile_null(row + 1, column):
+						if is_matched_grid_tile(row - 1, column, type) and is_matched_grid_tile(row + 1, column, type):
+							match_found = true
+							match_tile(row - 1, column)
+							match_tile(row, column)
+							match_tile(row + 1, column)
+				if column > 0 and column < columns - 1:
+					if !is_grid_tile_null(row, column - 1) and !is_grid_tile_null(row, column + 1):
+						if is_matched_grid_tile(row, column - 1, type) and is_matched_grid_tile(row, column + 1, type):
+							match_found = true
+							match_tile(row, column - 1)
+							match_tile(row, column)
+							match_tile(row, column + 1)
+
+
+
+
+
 # available pieces
 var available_pieces = [
 	preload("res://scenes/blue_piece.tscn"),

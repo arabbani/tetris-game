@@ -10,7 +10,15 @@ color = null
 
 [node name="Sprite" type="Sprite" parent="." index="0"]
 
-scale = Vector2( 0.75, 0.75 )
 _sections_unfolded = [ "Transform" ]
+
+[node name="move_tween" type="Tween" parent="." index="1"]
+
+repeat = false
+playback_process_mode = 1
+playback_speed = 1.0
+playback/active = false
+playback/repeat = false
+playback/speed = 1.0
 
 
